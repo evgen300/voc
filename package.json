@@ -1,0 +1,33 @@
+{
+  "name": "voc",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 5181",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@elevenlabs/elevenlabs-js": "^2.40.0",
+    "fs-extra": "^11.3.4",
+    "lodash": "^4.17.23",
+    "mongoose": "^9.3.3",
+    "next": "16.2.1",
+    "next-client-cookies": "^2.1.1",
+    "primereact": "^10.9.7",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "sass": "^1.98.0",
+    "ts-md5": "^2.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.1",
+    "typescript": "^5"
+  }
+}
