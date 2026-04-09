@@ -336,10 +336,10 @@ export default function WordsForm(props: WordsFormProps) {
           <div className="form-row">
             <div className="form-field"></div>
             <div className="form-field">
-              <div className="button -primary" onClick={() => {
+              <div className="button" onClick={() => {
                 addForm()
               }}>
-                + ADD
+                + Add row
               </div>
             </div>
           </div>

@@ -41,5 +41,8 @@ body {
   font-size: 20px;
   .p-multiselect-items-wrapper {
     max-height: 250px;
+    min-width: 120px;
+    scrollbar-color: #5f5f5f #222627;
+    scrollbar-width: thin;
   }
 }
