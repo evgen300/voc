@@ -36,7 +36,9 @@ interface GetListInterface {
   word?: string,
   transcription?: string,
   translation?: string,
-  notes?: string
+  notes?: string,
+  type_id?: string,
+  categories?: Array<string>
 };
 
 const getList = async function(request: GetListInterface) {
@@ -62,32 +64,39 @@ const getList = async function(request: GetListInterface) {
         params.project_id = fieldValue;
         break;
       case 'word':
-        let wordRegex = new RegExp(fieldValue, 'i');
+        let wordRegex = new RegExp(fieldValue.toString(), 'i');
         params['$or'] = [
           {word: wordRegex},
           {'forms.word': wordRegex},
         ];
         break;
       case 'transcription':
-        let transcriptionRegex = new RegExp(fieldValue, 'i');
+        let transcriptionRegex = new RegExp(fieldValue.toString(), 'i');
         params['$or'] = [
           {transcription: transcriptionRegex},
           {'forms.transcription': transcriptionRegex},
         ];
         break;
       case 'translation':
-        let translationRegex = new RegExp(fieldValue, 'i');
+        let translationRegex = new RegExp(fieldValue.toString(), 'i');
         params['$or'] = [
           {translation: translationRegex},
           {'forms.translation': translationRegex},
         ];
         break;
       case 'notes':
-        let notesRegex = new RegExp(fieldValue, 'i');
+        let notesRegex = new RegExp(fieldValue.toString(), 'i');
         params['$or'] = [
           {notes: notesRegex},
           {'forms.notes': notesRegex},
         ];
+        break;
+      case 'type_id':
+        params.type_id = fieldValue.toString();
+        break;
+      case 'categories':
+        console.log(fieldValue);
+        params.categories = { '$all': fieldValue };
         break;
     }
   });

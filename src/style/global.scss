@@ -220,6 +220,9 @@ body {
         .-rows-6 {
           grid-template-columns: 5% 23% 20% 21% 23% 8%;
         }
+        .-rows-7 {
+          grid-template-columns: 14% 14% 14% 14% 14% 14% 14%;
+        }
         i.fa-circle-play {
           width: 20px;
           height: 20px;
@@ -233,6 +236,11 @@ body {
           .search-result-formatted {
             background-color: inherit;
           }
+        }
+      }
+      &.-words-filter {
+        .-rows-7 {
+          grid-template-columns: 14% 14% 14% 14% 14% 14% 14%;
         }
       }
       &.-phrases-list {

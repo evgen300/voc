@@ -4,9 +4,12 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
+import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
 
 import { useWordContext, WordInterface, WordsFilterInterface } from "@/context/modules/WordsContext";
 import { useProjectContext } from "@/context/modules/ProjectsContext";
+import { useDataContext } from "@/context/modules/DataContext";
 
 import WordsSearchResult from "@/components/words/WordsSearchResult";
 
@@ -18,6 +21,7 @@ export default function WordsList() {
 
   const { getList, deleteWord } = useWordContext();
   const { currentProject } = useProjectContext();
+  const { getTypes, types, getCategories, categories } = useDataContext();
 
   useEffect(() => {
     if (currentProject && currentProject._id) {
@@ -25,9 +29,14 @@ export default function WordsList() {
     }
   }, [ currentProject ]);
 
+  useEffect(() => {
+    getTypes();
+    getCategories();
+  }, [ ]);
+
   const filterWords = async function() {
     setLastFilters({...filters});
-    setWords(await getList(currentProject._id, filters.search, filters.word, filters.transcription, filters.translation, filters.notes));
+    setWords(await getList(currentProject._id, filters.search, filters.word, filters.transcription, filters.translation, filters.notes, filters.type_id, filters.categories));
   }
 
   const resetFIlters = async function() {
@@ -78,7 +87,7 @@ export default function WordsList() {
         <i className="fa-solid fa-plus"></i>&nbsp;Add
       </Link>
       <div className="items-list -words-filter">
-        <div className="item-row -rows-5">
+        <div className="item-row -rows-7">
           <div className="item-field">
             Filter:<br /><input name="filter" value={ filters.search || "" } onChange={(e) => setFilters({...filters, search: e.target.value})} />
           </div>
@@ -93,6 +102,12 @@ export default function WordsList() {
           </div>
           <div className="item-field">
             Notes:<br /><input name="notes" value={ filters.notes || "" } onChange={(e) => setFilters({...filters, notes: e.target.value})} />
+          </div>
+          <div className="item-field">
+            Type:<br /><Dropdown value={filters.type_id} options={types} onChange={(e: DropdownChangeEvent) => setFilters({...filters, type_id: e.value})} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
+          </div>
+          <div className="item-field">
+            Categories:<br /><MultiSelect value={filters.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setFilters({...filters, categories: e.value})} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
           </div>
         </div>
         <div className="item-row -rows-5">

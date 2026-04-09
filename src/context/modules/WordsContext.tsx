@@ -37,7 +37,9 @@ export interface WordsFilterInterface {
   word?: string,
   transcription?: string,
   translation?: string,
-  notes?: string
+  notes?: string,
+  categories?: Array<string>,
+  type_id?: string
 };
 
 const WordContext = createContext<WordContextInterface>({
@@ -50,8 +52,8 @@ const WordContext = createContext<WordContextInterface>({
 });
 
 export function WordContextProvider({ children }: any) {
-  const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "") {
-    let list = await fetch(`/api/words?project_id=${project_id}&search=${searchString}&word=${word}&transcription=${tarnscription}&translation=${translation}&notes=${notes}`);
+  const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "", type_id: string = "", categories: Array<string> = []) {
+    let list = await fetch(`/api/words?project_id=${project_id}&search=${searchString}&word=${word}&transcription=${tarnscription}&translation=${translation}&notes=${notes}&type_id=${type_id}&categories=${categories}`);
     return await list.json();
   }
 

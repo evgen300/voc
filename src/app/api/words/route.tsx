@@ -19,8 +19,11 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
   let tarnscription = req.nextUrl.searchParams.get('transcription');
   let translation = req.nextUrl.searchParams.get('translation');
   let notes = req.nextUrl.searchParams.get('notes');
+  let type_id = req.nextUrl.searchParams.get('type_id');
+  let categoriesRequest = req.nextUrl.searchParams.get('categories');
+  let categories = categoriesRequest && categoriesRequest.length > 0 ? categoriesRequest.split(',') : [];
   await dbConnect();
-  const words = await Word.getList({ project_id: project_id || "", search: search || "", word: word || "", transcription: tarnscription || "", translation: translation || "", notes: notes || "" });
+  const words = await Word.getList({ project_id: project_id || "", search: search || "", word: word || "", transcription: tarnscription || "", translation: translation || "", notes: notes || "", type_id: type_id || "", categories: categories || [] });
   return new Response(JSON.stringify(words), { status: 200 });
 }
 
