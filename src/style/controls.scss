@@ -44,5 +44,14 @@ body {
     min-width: 120px;
     scrollbar-color: #5f5f5f #222627;
     scrollbar-width: thin;
+    .p-multiselect-item {
+      display: grid;
+      grid-template-columns: 10% 90%;
+      .p-multiselect-checkbox {
+        .p-checkbox-box {
+          display: none;
+        }
+      }
+    }
   }
 }
