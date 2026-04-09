@@ -13,6 +13,6 @@ export async function GET(req: NextApiRequest, { params }: any) {
   }*/
   await dbConnect();
   const id = (await params).id;
-  const project = await Projects.getById(id);
+  const project = await Projects.getFullProjectInfo(id);
   return new Response(JSON.stringify(project), { status: 200 });
 }

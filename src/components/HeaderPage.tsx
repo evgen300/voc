@@ -23,7 +23,7 @@ export default function HeaderPage() {
         <div className="header-item">
           { currentProject && currentProject._id ? (
             <span>{ currentProject.name }
-            <img src={"/icons/flags/pl.png"} /></span>
+            <img src={"/icons/flags/" + currentProject.language?.code + ".png"} /></span>
           ) : '' }
         </div>
       </div>
