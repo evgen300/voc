@@ -14,8 +14,7 @@ const WordSchema = new mongoose.Schema({
     required: true,
   },
   transcription: {
-    type: String,
-    required: true,
+    type: String
   },
   translation: {
     type: String,
