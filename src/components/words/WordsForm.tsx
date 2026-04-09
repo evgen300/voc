@@ -253,13 +253,13 @@ export default function WordsForm(props: WordsFormProps) {
             <div className="form-field">
               <div className="field-label">Type</div>
               <div className="field-value">
-                <Dropdown value={editWord.type_id} options={types} onChange={(e: MultiSelectChangeEvent) => setTypeId(e.value)} optionLabel="name" optionValue="_id" />
+                <Dropdown value={editWord.type_id} options={types} onChange={(e: MultiSelectChangeEvent) => setTypeId(e.value)} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
               </div>
             </div>
             <div className="form-field">
               <div className="field-label">Category</div>
               <div className="field-value">
-                <MultiSelect value={editWord.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategories(e.value)} optionLabel="name" optionValue="_id" />
+                <MultiSelect value={editWord.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategories(e.value)} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
               </div>
             </div>
           </div>
@@ -343,7 +343,11 @@ export default function WordsForm(props: WordsFormProps) {
               </div>
             </div>
           </div>
-          <div className="form-row">
+          <div className="form-row -cols-6">
+            <div className="form-field"></div>
+            <div className="form-field"></div>
+            <div className="form-field"></div>
+            <div className="form-field"></div>
             <div className="form-field"></div>
             <div className="form-field">
               <button type="submit" className="button -primary" disabled={ pending }>

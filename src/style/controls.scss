@@ -5,6 +5,7 @@
   cursor: pointer;
   display: inline-block;
   margin: 0px 2px;
+  font-size: 20px;
   &.-primary {
     background-color: #289c38 !important;
     color: white;
@@ -32,5 +33,13 @@ body {
       &.-primary {
       }
     }
+  }
+}
+
+.voc-multiselect {
+  background-color: inherit;
+  font-size: 20px;
+  .p-multiselect-items-wrapper {
+    max-height: 250px;
   }
 }
