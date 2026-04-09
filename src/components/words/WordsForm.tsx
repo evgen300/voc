@@ -22,28 +22,14 @@ type FormState = {
 export default function WordsForm(props: WordsFormProps) {
   const { wordData, action } = props;
 
-  const [ word, setWord ] = useState<string>("");
-  const [ transcription, setTranscription ] = useState<string>("");
-  const [ translation, setTranslation ] = useState<string>("");
-  const [ notes, setNotes ] = useState<string>("");
-  const [ type, setType ] = useState<string>("");
-  const [ forms, setForms ] = useState<Array<WordFormInterface>>([]);
-  const [ category, setCategory ] = useState<Array<string>>([]);
-  const [ audio, setAudio ] = useState<string>("");
+  const [ editWord, setEditWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", forms: [], categories: [], type_id: ""});
 
   const { setWordAudio } = useWordContext();
   const { categories, getCategories, types, getTypes } = useDataContext();
   const { currentProject } = useProjectContext();
 
   useEffect(() => {
-    setWord(wordData.word || "");
-    setTranscription(wordData.transcription || "");
-    setTranslation(wordData.translation || "");
-    setNotes(wordData.notes || "");
-    setForms(wordData.forms || []);
-    setType(wordData.type_id || "");
-    setCategory(wordData.categories || []);
-    setAudio(wordData.audio || "");
+    setEditWord(wordData);
   }, [ wordData ]);
 
   useEffect(() => {
@@ -52,9 +38,9 @@ export default function WordsForm(props: WordsFormProps) {
   }, [ ]);
 
   const addForm = function () {
-    let wordForms = [...forms, {word: "", transcription: "", translation: "", notes: ""}];
+    let wordForms = [...editWord.forms, {word: "", transcription: "", translation: "", notes: ""}];
     //wordForms.push({word: "", transcription: "", translation: "", notes: ""});
-    setForms([...wordForms]);
+    setEditWord({...editWord, forms: [...wordForms]});
   }
   
   const insertForm = function (afterIdx: number) {
@@ -69,13 +55,13 @@ export default function WordsForm(props: WordsFormProps) {
     });*/
     const nextForms = [
       // Items before the insertion point:
-      ...forms.slice(0, afterIdx + 1),
+      ...editWord.forms.slice(0, afterIdx + 1),
       // New item:
-      {...forms[afterIdx- + 1], word: "", transcription: "", translation: "", notes: ""},
+      {...editWord.forms[afterIdx- + 1], word: "", transcription: "", translation: "", notes: ""},
       // Items after the insertion point:
-      ...forms.slice(afterIdx + 1)
+      ...editWord.forms.slice(afterIdx + 1)
     ];
-    setForms(nextForms);
+    setEditWord({...editWord, forms: [...nextForms]});
     return;
     let wordForms = lodash.cloneDeep(forms);
     let before = lodash.cloneDeep(wordForms).splice(afterIdx + 1);
@@ -105,62 +91,70 @@ export default function WordsForm(props: WordsFormProps) {
   }
 
   const deleteForm = function (afterIdx: number) {
-    let wordForms = wordData.forms;
-    wordForms.splice(afterIdx, 1);
-    setForms([...wordForms]);
+    let wordForms = [...editWord.forms].filter((form, idx) => {
+      return idx !== afterIdx;
+    });
+    
+    setEditWord({...editWord, forms: [...wordForms]});
   }
 
   const moveFormUp = function (idx: number) {
     if (idx === 0) {
-      let newWord = forms[0].word;
-      let newTranslation = forms[0].translation;
-      let newTranscription = forms[0].transcription;
-      let newNotes = forms[0].notes;
-      let newForms = [...forms];
-      newForms[0] = {word: word, translation: translation, transcription: transcription, notes: notes};
-      setWord(newWord);
-      setTranscription(newTranscription);
-      setTranslation(newTranslation);
-      setNotes(newNotes);
-      setForms(newForms);
+      let newWord = editWord.forms[0].word;
+      let newTranslation = editWord.forms[0].translation;
+      let newTranscription = editWord.forms[0].transcription;
+      let newNotes = editWord.forms[0].notes;
+      let newAudio = editWord.forms[0].audio;
+      let newForms = [...editWord.forms];
+      newForms[0] = {word: editWord.word, translation: editWord.translation, transcription: editWord.transcription, notes: editWord.notes, audio: editWord.audio};
+      let newEditData = {...editWord};
+
+      newEditData.word = newWord;
+      newEditData.transcription = newTranscription;
+      newEditData.translation = newTranslation;
+      newEditData.notes = newNotes;
+      newEditData.audio = newAudio;
+      newEditData.forms = [...newForms];
+      setEditWord(newEditData);
       return;
     }
-    const newForms = forms.map((form, formIdx) => {
+    const newForms = editWord.forms.map((form, formIdx) => {
       if (formIdx < idx - 1 || formIdx > idx) {
         return {...form};
       } else if (formIdx === idx - 1) {
-        return {...forms[idx]};
+        return {...editWord.forms[idx]};
       } else if (formIdx === idx) {
-        return {...forms[idx - 1]};
+        return {...editWord.forms[idx - 1]};
+      } else {
+        return {...form};
       }
     });
-    setForms(newForms);
+    setEditWord({...editWord, forms: [...newForms]});
   }
 
   const moveFormDown = function (idx: number) {
-    const newForms = forms.map((form, formIdx) => {
+    const newForms = editWord.forms.map((form, formIdx) => {
       if (formIdx < idx || formIdx > idx + 1) {
         return {...form};
       } else if (formIdx === idx + 1) {
-        return {...forms[idx]};
+        return {...editWord.forms[idx]};
       } else if (formIdx === idx) {
-        return {...forms[idx + 1]};
+        return {...editWord.forms[idx + 1]};
+      } else {
+        return {...form};
       }
     });
-    setForms(newForms);
+    setEditWord({...editWord, forms: [...newForms]});
   }
 
   const handleSubmitForm = async function(prevState: FormData, data: FormData) {
-    let updateData = Object.fromEntries(data);
-    updateData.categories = category;
-    updateData.type_id = type;
-    updateData.forms = forms;
-    updateData.project_id = currentProject._id;
-    await action(updateData);
+    let insertData = {...editWord};
+    insertData.project_id = currentProject._id;
+    await action(insertData);
   }
 
   const setFormValue = function(idx: number, field: string, value: string) {
-    const changedForms = forms.map((form, formIdx) => {
+    const changedForms = editWord.forms.map((form, formIdx) => {
       if (formIdx !== idx) {
         return {...form};
       } else {
@@ -169,7 +163,13 @@ export default function WordsForm(props: WordsFormProps) {
         return changedForm;
       }
     });
-    setForms(changedForms);
+    setEditWord({...editWord, forms: [...changedForms]});
+  }
+
+  const setWordValue = function(field: string, value: string) {
+    let wordData = {...editWord};
+    wordData[field as keyof WordInterface] = value;
+    setEditWord({...wordData});
   }
 
   const playAudio = function (url: string) {
@@ -181,13 +181,23 @@ export default function WordsForm(props: WordsFormProps) {
     const response = await setWordAudio(word_id, formIdx);
     console.log(response);
     if (formIdx === null) {
-      setAudio(response.audio);
+      editWord.audio = response.audio;
     } else {
-      const newForms = response.forms.map((form, idx) => {
+      const newForms = response.forms.map((form: WordFormInterface, idx: number) => {
       return {...form};
     });
-    setForms(newForms);
+    setEditWord({...editWord, forms: [...newForms]});
     }
+  }
+
+  const setTypeId = function(type_id: string) {
+    editWord.type_id = type_id;
+    setEditWord({...editWord});
+  }
+
+  const setCategories = function(categories: Array<string>) {
+    editWord.categories = categories;
+    setEditWord({...editWord});
   }
 
   const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, new FormData());
@@ -214,28 +224,28 @@ export default function WordsForm(props: WordsFormProps) {
           <div className="form-row -cols-5">
             <div className="form-field">
               <div className="field-value">
-                <input name="word" defaultValue={word} />
+                <input name="word" value={editWord.word} onChange={(e) => setWordValue('word', e.target.value)} />
               </div>
             </div>
             <div className="form-field">
-              { audio ? (
-                <i className="fa-solid fa-play" onClick={() => playAudio(audio)}></i>
+              { editWord.audio ? (
+                <i className="fa-solid fa-play" onClick={() => playAudio(editWord.audio || "")}></i>
               ) : '' }
               <i className="fa-solid fa-arrows-rotate" onClick={() => createAudio(wordData._id || "")}></i>
             </div>
             <div className="form-field">
               <div className="field-value">
-                <input name="transcription" defaultValue={transcription} />
+                <input name="transcription" value={editWord.transcription} onChange={(e) => setWordValue('transcription', e.target.value)} />
               </div>
             </div>
             <div className="form-field">
               <div className="field-value">
-                <input name="translation" defaultValue={translation} />
+                <input name="translation" value={editWord.translation} onChange={(e) => setWordValue('translation', e.target.value)} />
               </div>
             </div>
             <div className="form-field">
               <div className="field-value">
-                <textarea name="notes" defaultValue={notes} rows={3} cols={30}></textarea>
+                <textarea name="notes" value={editWord.notes} rows={3} cols={30} onChange={(e) => setWordValue('notes', e.target.value)}></textarea>
               </div>
             </div>
           </div>
@@ -243,13 +253,13 @@ export default function WordsForm(props: WordsFormProps) {
             <div className="form-field">
               <div className="field-label">Type</div>
               <div className="field-value">
-                <Dropdown value={type} options={types} onChange={(e: MultiSelectChangeEvent) => setType(e.value)} optionLabel="name" optionValue="_id" />
+                <Dropdown value={editWord.type_id} options={types} onChange={(e: MultiSelectChangeEvent) => setTypeId(e.value)} optionLabel="name" optionValue="_id" />
               </div>
             </div>
             <div className="form-field">
               <div className="field-label">Category</div>
               <div className="field-value">
-                <MultiSelect value={category} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategory(e.value)} optionLabel="name" optionValue="_id" />
+                <MultiSelect value={editWord.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategories(e.value)} optionLabel="name" optionValue="_id" />
               </div>
             </div>
           </div>
@@ -269,13 +279,13 @@ export default function WordsForm(props: WordsFormProps) {
               <div className="field-label">Notes</div>
             </div>
           </div>
-          { forms.map((form, idx) => {
+          { editWord.forms.map((form, idx) => {
             return (
               <div key={ idx } className="form-row -cols-6">
                 <div className="form-field">
                   <div className="field-label">
                     <i className="fa-solid fa-angle-up" onClick={() => moveFormUp(idx)}></i>
-                    { idx < forms.length - 1 ? 
+                    { idx < editWord.forms.length - 1 ? 
                     (<i className="fa-solid fa-angle-down" onClick={() => moveFormDown(idx)}></i>) : 
                     <span className="move-word-placeholder"></span>}
                   </div>

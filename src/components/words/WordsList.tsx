@@ -3,15 +3,20 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
+import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
+
 import { useWordContext, WordInterface, WordsFilterInterface } from "@/context/modules/WordsContext";
 import { useProjectContext } from "@/context/modules/ProjectsContext";
+
+import WordsSearchResult from "@/components/words/WordsSearchResult";
 
 export default function WordsList() {
 
   const [ words, setWords ] = useState<Array<WordInterface>>([]);
   const [ filters, setFilters ] = useState<WordsFilterInterface>({});
+  const [ lastFilters, setLastFilters ] = useState<WordsFilterInterface>({});
 
-  const { getList } = useWordContext();
+  const { getList, deleteWord } = useWordContext();
   const { currentProject } = useProjectContext();
 
   useEffect(() => {
@@ -21,6 +26,7 @@ export default function WordsList() {
   }, [ currentProject ]);
 
   const filterWords = async function() {
+    setLastFilters({...filters});
     setWords(await getList(currentProject._id, filters.search, filters.word, filters.transcription, filters.translation, filters.notes));
   }
 
@@ -44,10 +50,29 @@ export default function WordsList() {
     a.play();
   }
 
-  const confirmRemove = async function(word: WordInterface) {}
+  const confirmRemove = async function(word: WordInterface) {
+    confirmDialog({
+      message: word.word,
+      header: 'Remove word?',
+      className: 'confirm-dialog',
+      acceptClassName: 'button -primary',
+      rejectClassName: 'button',
+      accept: async () => {
+        await deleteWord(word._id);
+        await filterWords();
+      }
+    });
+  }
+
+  const getFormattedFieldText = function(text: string, field: string = '') {
+    return (
+      <WordsSearchResult filters={lastFilters} text={text} field={field}></WordsSearchResult>
+    )
+  }
 
   return (
     <div>
+      <ConfirmDialog />
       <h1 className="section-title">Words list</h1>
       <Link className="button -primary" href={"/words/create"}>
         <i className="fa-solid fa-plus"></i>&nbsp;Add
@@ -96,11 +121,11 @@ export default function WordsList() {
                   ) : '' }
                 </div>
                 <div className="item-field">
-                  { word.word }
+                  { getFormattedFieldText(word.word, 'word') }
                 </div>
-                <div className="item-field">[{ word.transcription }]</div>
-                <div className="item-field">{ word.translation }</div>
-                <div className="item-field">{ word.notes }</div>
+                <div className="item-field">[{ getFormattedFieldText(word.transcription, 'transcription') }]</div>
+                <div className="item-field">{ getFormattedFieldText(word.translation, 'translation') }</div>
+                <div className="item-field">{ getFormattedFieldText(word.notes, 'notes') }</div>
                 <div className="item-action">
                   <Link href={`/words/${word._id}/edit`}>
                     <i className="fa-solid fa-pencil"></i>
@@ -118,10 +143,10 @@ export default function WordsList() {
                         <i className="fa-regular fa-circle-play" onClick={() => playAudio(form.audio || "")}></i>
                       ) : '' }
                     </div>
-                    <div className="item-field">{ form.word }</div>
-                    <div className="item-field">[{ form.transcription }]</div>
-                    <div className="item-field">{ form.translation }</div>
-                    <div className="item-field">{ form.notes }</div>
+                    <div className="item-field">{ getFormattedFieldText(form.word, 'word') }</div>
+                    <div className="item-field">[{ getFormattedFieldText(form.transcription, 'transcription') }]</div>
+                    <div className="item-field">{ getFormattedFieldText(form.translation, 'translation') }</div>
+                    <div className="item-field">{ getFormattedFieldText(form.notes, 'notes') }</div>
                   </div>
                 )
               }) }

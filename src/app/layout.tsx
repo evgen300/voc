@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@/style/global.scss";
 import "@/style/controls.scss";
+import "@/style/dialogs.scss";
 import { cookies } from "next/headers";
 import { CookiesProvider } from 'next-client-cookies/server';
 import { MainContextProvider } from "@/context/MainContext";

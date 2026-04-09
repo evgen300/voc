@@ -28,7 +28,8 @@ interface WordContextInterface {
   createWord: Function,
   getWord: Function,
   editWord: Function,
-  setWordAudio: Function
+  setWordAudio: Function,
+  deleteWord: Function
 };
 
 export interface WordsFilterInterface {
@@ -44,7 +45,8 @@ const WordContext = createContext<WordContextInterface>({
   createWord: () => {},
   getWord: () => {},
   editWord: () => {},
-  setWordAudio: () => {}
+  setWordAudio: () => {},
+  deleteWord: () => {}
 });
 
 export function WordContextProvider({ children }: any) {
@@ -80,6 +82,17 @@ export function WordContextProvider({ children }: any) {
     return await response.json();
   }
 
+  const deleteWord = async function (id: string) {
+    const response = await fetch(`/api/words/${id}`, {
+      method: 'DELETE',
+      body: JSON.stringify({}),
+      headers: {
+        'Content-Type' : 'application/json'
+      }
+    });
+    return await response.json();
+  }
+
   const setWordAudio = async function (id: string, form_idx: number | null = null) {
     let request: any = {};
     if (form_idx !== null) {
@@ -101,7 +114,8 @@ export function WordContextProvider({ children }: any) {
       createWord,
       getWord,
       editWord,
-      setWordAudio
+      setWordAudio,
+      deleteWord
     }}>
       { children }
     </WordContext.Provider>

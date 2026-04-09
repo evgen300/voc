@@ -91,13 +91,40 @@ const getList = async function(request: GetListInterface) {
         break;
     }
   });
-  const words = await WordSchema.find(params).sort("word");
+  let words = await WordSchema.find(params).sort("word");
+
+  if (request.search && request.search.length > 0) {
+    let searchSearch = request.search.toLowerCase();
+    words.forEach(word => {
+      word.forms = word.forms.filter((form: WordFormInterface) => {
+        return form.word.toLowerCase().indexOf(searchSearch || "") !== -1 || 
+          form.transcription.toLowerCase().indexOf(searchSearch || "") !== -1 || 
+          form.translation.toLowerCase().indexOf(searchSearch || "") !== -1 ||
+          form.notes.toLowerCase().indexOf(searchSearch || "") !== -1;
+      });
+    });
+  } else {
+    if (request.word || request.transcription || request.translation || request.notes) {
+      let wordSearch = request.word;
+      let transcriptionSearch = request.transcription;
+      let translationSearch = request.translation;
+      let notesSearch = request.notes;
+      words.forEach(word => {
+      word.forms = word.forms.filter((form: WordFormInterface) => {
+        return (!request.word || form.word.toLowerCase().indexOf(wordSearch || "") !== -1) && 
+          (!request.transcription || form.transcription.toLowerCase().indexOf(transcriptionSearch || "") !== -1) &&
+          (!request.translation || form.translation.toLowerCase().indexOf(translationSearch || "") !== -1) &&
+          (!request.notes || form.notes.toLowerCase().indexOf(notesSearch || "") !== -1);
+      });
+    });
+    }
+  }
 
   words.forEach(word => {
     if (word.audio) {
       word.audio = AUDIO_URL + word.audio;
     }
-    word.forms.forEach((form, idx) => {
+    word.forms.forEach((form: WordFormInterface, idx: number) => {
       if (form.audio) {
         word.forms[idx].audio = AUDIO_URL + form.audio;
       }
@@ -129,7 +156,7 @@ const edit = async function (_id: string, data: WordInterface) {
     word.audio = AUDIO_URL + word.audio;
   }
 
-  word.forms.forEach((form, idx) => {
+  word.forms.forEach((form: WordFormInterface, idx: number) => {
     if (form.audio) {
       word.forms[idx].audio = AUDIO_URL + form.audio;
     }
@@ -143,7 +170,7 @@ const get = async function (_id: string) {
   if (word.audio) {
     word.audio = AUDIO_URL + word.audio;
   }
-  word.forms.forEach((form, idx) => {
+  word.forms.forEach((form: WordFormInterface, idx: number) => {
     if (form.audio) {
       word.forms[idx].audio = AUDIO_URL + form.audio;
     }
@@ -155,6 +182,10 @@ const getWordAudio = async function (word: string, langCode: string, targetFile:
   const audioData = await textToSpeech.generateAudioAPI(word, langCode);
 
   fse.outputFileSync(targetFile, Buffer.from(audioData));
+}
+
+const remove = async function (_id: string) {
+  return await WordSchema.deleteOne({ _id: _id });
 }
 
 const setAudio = async function (word_id: string, part_idx: number | null = null) {
@@ -177,5 +208,6 @@ export default {
   create,
   edit,
   get,
-  setAudio
+  setAudio,
+  remove
 }

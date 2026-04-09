@@ -17,6 +17,10 @@ export default function LeftMenuPage() {
     'words': {
       title: 'Words',
       icon: 'fa-solid fa-font'
+    },
+    'phrases': {
+      title: 'Phrases',
+      icon: 'fa-solid fa-comment'
     }
   };
 

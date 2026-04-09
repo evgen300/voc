@@ -4,7 +4,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest } from 'next/server';
 
 import dbConnect from "@/lib/mongodb";
-import Word from '@/models/Word';
+import Phrase from '@/models/Phrase';
 //import { getServerSession } from 'next-auth/next';
 //import { authOptions } from '@/pages/api/auth/[...nextauth]';
 
@@ -15,8 +15,8 @@ export async function GET(req: NextRequest, { params }: any) {
   }*/
   let id = (await params).id;
   await dbConnect();
-  const words = await Word.get(id);
-  return new Response(JSON.stringify(words), { status: 200 });
+  const phrase = await Phrase.get(id);
+  return new Response(JSON.stringify(phrase), { status: 200 });
 }
 
 export async function PUT(req: NextRequest, { params }: any) {
@@ -29,8 +29,8 @@ export async function PUT(req: NextRequest, { params }: any) {
   let requestData = await req.json();
   const id = (await params).id;
   //requestData.user_id = session.user.id;
-  const word = await Word.edit(id, requestData);
-  return new Response(JSON.stringify(word), { status: 200 });
+  const phrase = await Phrase.edit(id, requestData);
+  return new Response(JSON.stringify(phrase), { status: 200 });
 }
 
 export async function DELETE(req: NextRequest, { params }: any) {
@@ -42,6 +42,6 @@ export async function DELETE(req: NextRequest, { params }: any) {
   //const list = await Company.create(session.user.roles.includes('admin') ? null : session.user.id);
   const id = (await params).id;
   //requestData.user_id = session.user.id;
-  const word = await Word.remove(id);
-  return new Response(JSON.stringify(word), { status: 200 });
+  const data = await Phrase.remove(id);
+  return new Response(JSON.stringify(data), { status: 200 });
 }

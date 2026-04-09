@@ -129,6 +129,55 @@ body {
           }
         }
       }
+      .phrase-form {
+        .form-row {
+          padding: 10px;
+          display: grid;
+          &.-cols-2 {
+            grid-template-columns: 20% 80%;
+          }
+          .field-label {
+            text-align: right;
+            padding: 0px 12px;
+            vertical-align: middle;
+          }
+          .field-value {
+            input {
+              border: 1px solid white;
+              padding: 1px 2px;
+            }
+            textarea {
+              resize: none;
+              vertical-align: middle;
+            }
+          }
+          i.fa-play {
+            color: green;
+          }
+          i.fa-arrows-rotate {
+            color: red;
+          }
+          i {
+            cursor: pointer;
+            width: 21px;
+            height: 21px;
+            border: 1px solid gray;
+            margin: 0px 2px;
+            vertical-align: text-bottom;
+            display: inline-block;
+          }
+          .move-word-placeholder {
+            display: inline-block;
+            width: 23px;
+          }
+          .fa-plus {
+            color: green;
+          }
+          .fa-minus {
+            color: red;
+          }
+        }
+      }
     }
     .items-list {
       font-size: 23px;
@@ -173,6 +222,34 @@ body {
           width: 20px;
           height: 20px;
           color: green;
+        }
+        .item-field {
+          .search-result {
+            display: inline-block;
+            background-color: #c55604;
+          }
+          .search-result-formatted {
+            background-color: inherit;
+          }
+        }
+      }
+      &.-phrases-list {
+        .-rows-5 {
+          grid-template-columns: 5% 35% 35% 20% 5%;
+        }
+        i.fa-circle-play {
+          width: 20px;
+          height: 20px;
+          color: green;
+        }
+        .item-field {
+          .search-result {
+            display: inline-block;
+            background-color: #c55604;
+          }
+          .search-result-formatted {
+            background-color: inherit;
+          }
         }
       }
     }
