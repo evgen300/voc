@@ -21,15 +21,6 @@ export interface WordInterface {
   type_id: string,
   project_id?: string,
   _id?: string
-}
-
-interface WordContextInterface {
-  getList: Function,
-  createWord: Function,
-  getWord: Function,
-  editWord: Function,
-  setWordAudio: Function,
-  deleteWord: Function
 };
 
 export interface WordsFilterInterface {
@@ -42,16 +33,32 @@ export interface WordsFilterInterface {
   type_id?: string
 };
 
+interface WordContextInterface {
+  getList: Function,
+  createWord: Function,
+  getWord: Function,
+  editWord: Function,
+  setWordAudio: Function,
+  deleteWord: Function,
+  wordsFilters: WordsFilterInterface,
+  setWordsFilters: Function
+};
+
 const WordContext = createContext<WordContextInterface>({
   getList: () => {},
   createWord: () => {},
   getWord: () => {},
   editWord: () => {},
   setWordAudio: () => {},
-  deleteWord: () => {}
+  deleteWord: () => {},
+  wordsFilters: {},
+  setWordsFilters: () => {}
 });
 
 export function WordContextProvider({ children }: any) {
+
+  const [ wordsFilters, setWordsFilters ] = useState<WordsFilterInterface>({});
+
   const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "", type_id: string = "", categories: Array<string> = []) {
     let list = await fetch(`/api/words?project_id=${project_id}&search=${searchString}&word=${word}&transcription=${tarnscription}&translation=${translation}&notes=${notes}&type_id=${type_id}&categories=${categories}`);
     return await list.json();
@@ -117,7 +124,9 @@ export function WordContextProvider({ children }: any) {
       getWord,
       editWord,
       setWordAudio,
-      deleteWord
+      deleteWord,
+      wordsFilters,
+      setWordsFilters
     }}>
       { children }
     </WordContext.Provider>

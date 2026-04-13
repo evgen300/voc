@@ -43,6 +43,7 @@ interface GetListInterface {
 
 const getList = async function(request: GetListInterface) {
   let params: any = {};
+  let orParams = [];
   Object.keys(request).forEach(field => {
     let fieldValue = request[field as keyof GetListInterface];
     if (fieldValue && fieldValue.length)
@@ -96,7 +97,26 @@ const getList = async function(request: GetListInterface) {
         break;
       case 'categories':
         console.log(fieldValue);
-        params.categories = { '$all': fieldValue };
+        if (fieldValue.includes('empty')) {
+          if (fieldValue.length === 1) {
+            params.categories = [];
+          } else {
+            params['$or'] = [ 
+              {
+                categories: {
+                  '$in': []
+                }
+              },
+              {
+                categories: {
+                  '$in': fieldValue
+                }
+              }
+            ];
+          }
+        } else {
+          params.categories = { '$in': fieldValue };
+        }
         break;
     }
   });
@@ -194,6 +214,7 @@ const getWordAudio = async function (word: string, langCode: string, targetFile:
 }
 
 const remove = async function (_id: string) {
+  //await WordSchema.updateMany({ project_id: "69d79b1e04d8c1e78a609181" }, { type_id: "69c6c3902820de2358f30d7f", categories: ["69d896daa942367dcd66c97f"] });
   return await WordSchema.deleteOne({ _id: _id });
 }
 
