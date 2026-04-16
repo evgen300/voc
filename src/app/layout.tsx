@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+//import "./globals.css";
 import "@/style/global.scss";
 import "@/style/controls.scss";
 import "@/style/dialogs.scss";
@@ -48,7 +48,7 @@ export default async function RootLayout({
         <body className={"" + theme}>
           <MainContextProvider>
             <HeaderPage></HeaderPage>
-            <div className="voc-container">
+            <div className="voc-container print-section">
               <LeftMenuPage></LeftMenuPage>
               <div className="voc-data">
                 <MainContainer project_id={ project_id || "" }>

@@ -120,7 +120,7 @@ const getList = async function(request: GetListInterface) {
         break;
     }
   });
-  let words = await WordSchema.find(params).sort("word");
+  let words = await WordSchema.find(params).sort("word").limit(100);
 
   if (request.search && request.search.length > 0) {
     let searchSearch = request.search.toLowerCase();

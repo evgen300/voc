@@ -13,12 +13,20 @@ import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 
 import WordsSearchResult from "@/components/words/WordsSearchResult";
 
+interface PrintConfig {
+  word: boolean,
+  transcription: boolean,
+  translation: boolean,
+  notes: boolean
+};
+
 export default function WordsList() {
 
   const [ words, setWords ] = useState<Array<WordInterface>>([]);
   //const [ filters, setFilters ] = useState<WordsFilterInterface>({});
   const [ lastFilters, setLastFilters ] = useState<WordsFilterInterface>({});
   const [ categoriesFilter, setCategoriesFilter ] = useState<Array<DataInterface>>([]);
+  const [ printConfig, setPrintConfig ] = useState<PrintConfig>({word: true, transcription: true, translation: true, notes: true});
 
   const { getList, deleteWord, wordsFilters, setWordsFilters } = useWordContext();
   const { currentProject } = useProjectContext();
@@ -77,13 +85,21 @@ export default function WordsList() {
         await filterWords();
       }
     });
-  }
+  };
 
   const getFormattedFieldText = function(text: string, field: string = '') {
     return (
       <WordsSearchResult filters={lastFilters} text={text} field={field}></WordsSearchResult>
     )
-  }
+  };
+
+  const getPrintColsConfig = function () {
+    let config = `-print-cols`;
+    Object.keys(printConfig).forEach(key => {
+      config+= printConfig[key as keyof PrintConfig] ? '-1' : '-0';
+    });
+    return config;
+  };
 
   return (
     <div>
@@ -125,8 +141,41 @@ export default function WordsList() {
           </div>
         </div>
       </div>
-      <div className="items-list -words-list">
-        <div className="items-header item-row -rows-5">
+      <div className="items-list">
+        <div className="item-row -rows-5">
+          <div className="item-field">
+            <label>
+              Word: <input type="checkbox" checked={printConfig.word} onChange={(e) => {
+                setPrintConfig({...printConfig, word: e.target.checked});
+              }} />
+            </label>
+          </div>
+          <div className="item-field">
+            <label>
+              Transcription: <input type="checkbox" checked={printConfig.transcription} onChange={(e) => {
+                setPrintConfig({...printConfig, transcription: e.target.checked});
+              }} />
+            </label>
+          </div>
+          <div className="item-field">
+            <label>
+              Translation: <input type="checkbox" checked={printConfig.translation} onChange={(e) => {
+                setPrintConfig({...printConfig, translation: e.target.checked});
+              }} />
+            </label>
+          </div>
+          <div className="item-field">
+            <label>
+              Notes: <input type="checkbox" checked={printConfig.notes} onChange={(e) => {
+                setPrintConfig({...printConfig, notes: e.target.checked});
+              }} />
+            </label>
+          </div>
+        </div>
+      </div>
+      <div className="items-list -words-list print-section">
+        <div className="items-header item-row -rows-6 -no-print">
+          <div></div>
           <div className="item-header">Word</div>
           <div className="item-header">Transcription</div>
           <div className="item-header">Translation</div>
@@ -135,8 +184,8 @@ export default function WordsList() {
         { words.map((word, idx) => {
           return (
             <div key={'word' + idx}>
-              <div key={idx} className="item-row -rows-6 -word-row">
-                <div className="item-field">
+              <div key={idx} className={"item-row -rows-6 -word-row " + getPrintColsConfig()}>
+                <div className="item-field -no-print">
                   { word.audio ? (
                     <i className="fa-regular fa-circle-play" onClick={() => playAudio(word.audio || "")}></i>
                   ) : '' }
@@ -153,7 +202,7 @@ export default function WordsList() {
                 </div>
                 <div className="item-field">{ getFormattedFieldText(word.translation, 'translation') }</div>
                 <div className="item-field">{ getFormattedFieldText(word.notes, 'notes') }</div>
-                <div className="item-action">
+                <div className="item-action -no-print">
                   <Link href={`/words/${word._id}/edit`}>
                     <i className="fa-solid fa-pencil"></i>
                   </Link>
@@ -164,8 +213,8 @@ export default function WordsList() {
               </div>
               { word.forms.map((form, formIdx) => {
                 return (
-                  <div key={formIdx} className="item-row -rows-6">
-                    <div className="item-field">
+                  <div key={formIdx} className={`item-row -rows-6 ` + getPrintColsConfig()}>
+                    <div className="item-field -no-print">
                       { form.audio ? (
                         <i className="fa-regular fa-circle-play" onClick={() => playAudio(form.audio || "")}></i>
                       ) : '' }
