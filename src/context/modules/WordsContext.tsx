@@ -44,6 +44,13 @@ interface WordContextInterface {
   setWordsFilters: Function
 };
 
+export interface PaginationInterface {
+  page: number,
+  pages: number,
+  total: number,
+  onpage: number
+};
+
 const WordContext = createContext<WordContextInterface>({
   getList: () => {},
   createWord: () => {},
@@ -59,8 +66,8 @@ export function WordContextProvider({ children }: any) {
 
   const [ wordsFilters, setWordsFilters ] = useState<WordsFilterInterface>({});
 
-  const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "", type_id: string = "", categories: Array<string> = []) {
-    let list = await fetch(`/api/words?project_id=${project_id}&search=${searchString}&word=${word}&transcription=${tarnscription}&translation=${translation}&notes=${notes}&type_id=${type_id}&categories=${categories}`);
+  const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "", type_id: string = "", categories: Array<string> = [], page: number = 1, onpage: number = 100) {
+    let list = await fetch(`/api/words?project_id=${project_id}&search=${searchString}&word=${word}&transcription=${tarnscription}&translation=${translation}&notes=${notes}&type_id=${type_id}&categories=${categories}&page=${page}&onpage=${onpage}`);
     return await list.json();
   }
 

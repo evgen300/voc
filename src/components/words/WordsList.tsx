@@ -7,7 +7,7 @@ import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
 import { MultiSelect, MultiSelectChangeEvent } from "primereact/multiselect";
 
-import { useWordContext, WordInterface, WordsFilterInterface } from "@/context/modules/WordsContext";
+import { useWordContext, WordInterface, WordsFilterInterface, PaginationInterface } from "@/context/modules/WordsContext";
 import { useProjectContext } from "@/context/modules/ProjectsContext";
 import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 
@@ -23,6 +23,7 @@ interface PrintConfig {
 export default function WordsList() {
 
   const [ words, setWords ] = useState<Array<WordInterface>>([]);
+  const [ wordsPagination, setWordsPagination ] = useState<PaginationInterface>({page: 1, pages: 0, total: 0, onpage: 100});
   //const [ filters, setFilters ] = useState<WordsFilterInterface>({});
   const [ lastFilters, setLastFilters ] = useState<WordsFilterInterface>({});
   const [ categoriesFilter, setCategoriesFilter ] = useState<Array<DataInterface>>([]);
@@ -48,12 +49,20 @@ export default function WordsList() {
     setCategoriesFilter([{_id: "empty", name: "Not set"}].concat(categoriesList));
   }
 
+  const applyFilters = async function () {
+    wordsPagination.page = 1;
+    await filterWords();
+  }
+
   const filterWords = async function() {
     setLastFilters({...wordsFilters});
-    setWords(await getList(currentProject._id, wordsFilters.search, wordsFilters.word, wordsFilters.transcription, wordsFilters.translation, wordsFilters.notes, wordsFilters.type_id, wordsFilters.categories));
+    const wordsData = await getList(currentProject._id, wordsFilters.search, wordsFilters.word, wordsFilters.transcription, wordsFilters.translation, wordsFilters.notes, wordsFilters.type_id, wordsFilters.categories, wordsPagination.page, wordsPagination.onpage);
+    setWords(wordsData.words);
+    setWordsPagination({...wordsData.pagination, pages: Math.ceil(wordsData.pagination.total / wordsPagination.onpage)});
   }
 
   const resetFIlters = async function() {
+    wordsPagination.page = 1;
     let newFilters = {...wordsFilters};
     Object.keys(wordsFilters).forEach(filterFiled => {
       newFilters[filterFiled as keyof WordsFilterInterface] = "";
@@ -101,6 +110,13 @@ export default function WordsList() {
     return config;
   };
 
+  const changePage = async function(pagenum: number) {
+    if (wordsPagination.page !== pagenum) {
+      wordsPagination.page = pagenum;
+      filterWords();
+    }
+  }
+
   return (
     <div>
       <ConfirmDialog />
@@ -134,7 +150,7 @@ export default function WordsList() {
         </div>
         <div className="item-row -rows-5">
           <div className="item-field">
-            <div className="button -primary" onClick={() => filterWords()}>Apply</div>
+            <div className="button -primary" onClick={() => applyFilters()}>Apply</div>
           </div>
           <div className="item-field">
             <div className="button" onClick={() => resetFIlters()}>Reset</div>
@@ -235,6 +251,17 @@ export default function WordsList() {
             </div>
           )
         }) }
+      </div>
+      <div className="items-pagination">
+        <ul>
+          { Array.from({ length: wordsPagination.pages }).map((pageNum, pageIdx) => {
+            return (
+              <li key={ pageIdx } className={"page " + (pageIdx + 1 === wordsPagination.page ? "-current" : "")} onClick={(e) => changePage(pageIdx + 1)}>
+                <span>{ pageIdx + 1 }</span>
+              </li>
+            )
+          }) }
+        </ul>
       </div>
     </div>
   )

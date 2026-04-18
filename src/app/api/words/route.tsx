@@ -22,8 +22,12 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
   let type_id = req.nextUrl.searchParams.get('type_id');
   let categoriesRequest = req.nextUrl.searchParams.get('categories');
   let categories = categoriesRequest && categoriesRequest.length > 0 ? categoriesRequest.split(',') : [];
+  let pageParam = req.nextUrl.searchParams.get('page');
+  let page = typeof pageParam === "string" ? parseInt(pageParam) : 1;
+  let onpageParam = req.nextUrl.searchParams.get('onpage');
+  let onpage = typeof onpageParam === "string" ? parseInt(onpageParam) : 1;
   await dbConnect();
-  const words = await Word.getList({ project_id: project_id || "", search: search || "", word: word || "", transcription: tarnscription || "", translation: translation || "", notes: notes || "", type_id: type_id || "", categories: categories || [] });
+  const words = await Word.getList({ project_id: project_id || "", search: search || "", word: word || "", transcription: tarnscription || "", translation: translation || "", notes: notes || "", type_id: type_id || "", categories: categories || [] }, page, onpage);
   return new Response(JSON.stringify(words), { status: 200 });
 }
 

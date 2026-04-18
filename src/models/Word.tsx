@@ -41,7 +41,7 @@ interface GetListInterface {
   categories?: Array<string>
 };
 
-const getList = async function(request: GetListInterface) {
+const getList = async function(request: GetListInterface, page: number = 1, onpage: number = 100) {
   let params: any = {};
   let orParams = [];
   Object.keys(request).forEach(field => {
@@ -120,11 +120,22 @@ const getList = async function(request: GetListInterface) {
         break;
     }
   });
-  let words = await WordSchema.find(params).sort("word").limit(100);
+  let pagedData = await WordSchema.aggregate([
+    { $match: params },
+    {
+      $facet: {
+        metadata: [{ $count: 'totalCount' }],
+        data: [{ $sort: { "word": 1 } }, { $skip: ( page - 1 ) * onpage }, { $limit: onpage }],
+      },
+    }
+  ]);
+  //let words = await WordSchema.find(params).sort("word").limit(100);
+  let words = pagedData[0].data;
+  let pagination = {total: pagedData[0].metadata[0].totalCount, page: page, onpage: onpage};
 
   if (request.search && request.search.length > 0) {
     let searchSearch = request.search.toLowerCase();
-    words.forEach(word => {
+    words.forEach((word: any) => {
       word.forms = word.forms.filter((form: WordFormInterface) => {
         return form.word.toLowerCase().indexOf(searchSearch || "") !== -1 || 
           form.transcription.toLowerCase().indexOf(searchSearch || "") !== -1 || 
@@ -138,7 +149,7 @@ const getList = async function(request: GetListInterface) {
       let transcriptionSearch = request.transcription;
       let translationSearch = request.translation;
       let notesSearch = request.notes;
-      words.forEach(word => {
+      words.forEach((word: any) => {
       word.forms = word.forms.filter((form: WordFormInterface) => {
         return (!request.word || form.word.toLowerCase().indexOf(wordSearch || "") !== -1) && 
           (!request.transcription || form.transcription.toLowerCase().indexOf(transcriptionSearch || "") !== -1) &&
@@ -149,7 +160,7 @@ const getList = async function(request: GetListInterface) {
     }
   }
 
-  words.forEach(word => {
+  words.forEach((word: any) => {
     if (word.audio) {
       word.audio = AUDIO_URL + word.audio;
     }
@@ -160,7 +171,7 @@ const getList = async function(request: GetListInterface) {
     });
   });
 
-  return words;
+  return {words: words, pagination: pagination};
 }
 
 const create = async function (data: WordInterface) {
