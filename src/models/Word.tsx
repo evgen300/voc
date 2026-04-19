@@ -130,6 +130,9 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
     }
   ]);
   //let words = await WordSchema.find(params).sort("word").limit(100);
+  if (!pagedData[0] || !Array.isArray(pagedData[0].data) || pagedData[0].data.length === 0) {
+    return {words: [], pagination: {total: 0, page: 1, onpage: onpage}};
+  }
   let words = pagedData[0].data;
   let pagination = {total: pagedData[0].metadata[0].totalCount, page: page, onpage: onpage};
 

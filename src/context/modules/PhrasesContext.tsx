@@ -38,8 +38,8 @@ const PhraseContext = createContext<PhraseContextInterface>({
 });
 
 export function PhraseContextProvider({ children }: any) {
-  const getList = async function (project_id: string, searchString: string = "", phrase: string = "", translation: string = "", notes: string = "") {
-    let list = await fetch(`/api/phrases?project_id=${project_id}&search=${searchString}&phrase=${phrase}&translation=${translation}&notes=${notes}`);
+  const getList = async function (project_id: string, searchString: string = "", phrase: string = "", translation: string = "", notes: string = "", page: number = 1, onpage: number = 100) {
+    let list = await fetch(`/api/phrases?project_id=${project_id}&search=${searchString}&phrase=${phrase}&translation=${translation}&notes=${notes}&page=${page}&onpage=${onpage}`);
     return await list.json();
   }
 

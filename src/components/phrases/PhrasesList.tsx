@@ -7,14 +7,17 @@ import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
 
 import { usePhraseContext, PhraseInterface, PhrasesFilterInterface } from "@/context/modules/PhrasesContext";
 import { useProjectContext } from "@/context/modules/ProjectsContext";
+import { PaginationInterface } from "@/context/modules/WordsContext";
 
 import PhrasesSearchResult from "@/components/phrases/PhrasesSearchResult";
+import Pagination from "@/components/Pagination";
 
 export default function PhrasesList() {
 
   const [ phrases, setPhrases ] = useState<Array<PhraseInterface>>([]);
   const [ filters, setFilters ] = useState<PhrasesFilterInterface>({});
   const [ lastFilters, setLastFilters ] = useState<PhrasesFilterInterface>({});
+  const [ phrasesPagination, setPhrasesPagination ] = useState<PaginationInterface>({page: 1, pages: 0, total: 0, onpage: 100});
 
   const { getList, deletePhrase } = usePhraseContext();
   const { currentProject } = useProjectContext();
@@ -27,10 +30,18 @@ export default function PhrasesList() {
 
   const filterPhrases = async function() {
     setLastFilters({...filters});
-    setPhrases(await getList(currentProject._id, filters.search, filters.phrase, filters.translation, filters.notes));
+    const phrasesData = await getList(currentProject._id, filters.search, filters.phrase, filters.translation, filters.notes, phrasesPagination.page, phrasesPagination.onpage);
+    setPhrases(phrasesData.phrases);
+    setPhrasesPagination({...phrasesData.pagination, pages: Math.ceil(phrasesData.pagination.total / phrasesPagination.onpage)});
+  }
+
+  const applyFilters = async function () {
+    phrasesPagination.page = 1;
+    await filterPhrases();
   }
 
   const resetFIlters = async function() {
+    phrasesPagination.page = 1;
     let newFilters = {...filters};
     Object.keys(filters).forEach(filterFiled => {
       newFilters[filterFiled as keyof PhrasesFilterInterface] = "";
@@ -70,6 +81,13 @@ export default function PhrasesList() {
     )
   }
 
+  const changePage = async function(pagenum: number) {
+    if (phrasesPagination.page !== pagenum) {
+      phrasesPagination.page = pagenum;
+      filterPhrases();
+    }
+  }
+
   return (
     <div>
       <ConfirmDialog />
@@ -94,7 +112,7 @@ export default function PhrasesList() {
         </div>
         <div className="item-row -rows-5">
           <div className="item-field">
-            <div className="button -primary" onClick={() => filterPhrases()}>Apply</div>
+            <div className="button -primary" onClick={() => applyFilters()}>Apply</div>
           </div>
           <div className="item-field">
             <div className="button" onClick={() => resetFIlters()}>Reset</div>
@@ -133,6 +151,7 @@ export default function PhrasesList() {
           )
         }) }
       </div>
+      <Pagination pagination={ phrasesPagination } action={ changePage } />
     </div>
   )
 }

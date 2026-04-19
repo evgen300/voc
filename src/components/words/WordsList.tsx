@@ -12,6 +12,7 @@ import { useProjectContext } from "@/context/modules/ProjectsContext";
 import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 
 import WordsSearchResult from "@/components/words/WordsSearchResult";
+import Pagination from "@/components/Pagination";
 
 interface PrintConfig {
   word: boolean,
@@ -252,17 +253,7 @@ export default function WordsList() {
           )
         }) }
       </div>
-      <div className="items-pagination">
-        <ul>
-          { Array.from({ length: wordsPagination.pages }).map((pageNum, pageIdx) => {
-            return (
-              <li key={ pageIdx } className={"page " + (pageIdx + 1 === wordsPagination.page ? "-current" : "")} onClick={(e) => changePage(pageIdx + 1)}>
-                <span>{ pageIdx + 1 }</span>
-              </li>
-            )
-          }) }
-        </ul>
-      </div>
+      <Pagination pagination={ wordsPagination } action={ changePage } />
     </div>
   )
 }

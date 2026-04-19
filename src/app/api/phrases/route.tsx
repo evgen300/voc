@@ -18,8 +18,12 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
   let phrase = req.nextUrl.searchParams.get('phrase');
   let translation = req.nextUrl.searchParams.get('translation');
   let notes = req.nextUrl.searchParams.get('notes');
+  let pageParam = req.nextUrl.searchParams.get('page');
+  let page = typeof pageParam === "string" ? parseInt(pageParam) : 1;
+  let onpageParam = req.nextUrl.searchParams.get('onpage');
+  let onpage = typeof onpageParam === "string" ? parseInt(onpageParam) : 1;
   await dbConnect();
-  const phrases = await Phrase.getList({ project_id: project_id || "", search: search || "", phrase: phrase || "", translation: translation || "", notes: notes || "" });
+  const phrases = await Phrase.getList({ project_id: project_id || "", search: search || "", phrase: phrase || "", translation: translation || "", notes: notes || "" }, page, onpage);
   return new Response(JSON.stringify(phrases), { status: 200 });
 }
 

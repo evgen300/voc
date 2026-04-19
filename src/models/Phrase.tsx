@@ -27,7 +27,7 @@ interface GetListInterface {
   notes?: string
 };
 
-const getList = async function(request: GetListInterface) {
+const getList = async function(request: GetListInterface, page: number = 1, onpage: number = 100) {
   let params: any = {};
   Object.keys(request).forEach(field => {
     let fieldValue = request[field as keyof GetListInterface];
@@ -58,15 +58,31 @@ const getList = async function(request: GetListInterface) {
         break;
     }
   });
-  let phrases = await PhrasesSchema.find(params).sort("phrase");
 
-  phrases.forEach(phrase => {
+  let pagedData = await PhrasesSchema.aggregate([
+    { $match: params },
+    {
+      $facet: {
+        metadata: [{ $count: 'totalCount' }],
+        data: [{ $sort: { "phrase": 1 } }, { $skip: ( page - 1 ) * onpage }, { $limit: onpage }],
+      },
+    }
+  ]);
+  if (!pagedData[0] || !Array.isArray(pagedData[0].data) || pagedData[0].data.length === 0) {
+    return {phrases: [], pagination: {total: 0, page: 1, onpage: onpage}};
+  }
+  let phrases = pagedData[0].data;
+  let pagination = {total: pagedData[0].metadata[0].totalCount, page: page, onpage: onpage};
+
+  //let phrases = await PhrasesSchema.find(params).sort("phrase");
+
+  phrases.forEach((phrase: any) => {
     if (phrase.audio) {
       phrase.audio = AUDIO_URL + phrase.audio;
     }
   });
 
-  return phrases;
+  return {phrases: phrases, pagination: pagination};
 }
 
 const create = async function (data: PhraseInterface) {
