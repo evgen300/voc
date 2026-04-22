@@ -16,12 +16,17 @@ export default function WordsEdit(params: WordEditParams) {
   const { wordId } = params;
 
   const [ word, setWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", categories: [], type_id: "", forms: []});
+  const [ loading, setLoading ] = useState<boolean>(true);
 
   useEffect(() => {
     if (wordId) {
       loadWord();
     }
   }, [ wordId ]);
+
+  useEffect(() => {
+    setLoading(false);
+  }, [ word ]);
 
   const router = useRouter();
 
@@ -35,6 +40,14 @@ export default function WordsEdit(params: WordEditParams) {
   const updateWord = async function (data: any) {
     await editWord(wordId, data);
     router.push('/words');
+  }
+
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="loader-round"></div>
+      </div>
+    )
   }
 
   return (

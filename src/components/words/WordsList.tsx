@@ -29,6 +29,7 @@ export default function WordsList() {
   const [ lastFilters, setLastFilters ] = useState<WordsFilterInterface>({});
   const [ categoriesFilter, setCategoriesFilter ] = useState<Array<DataInterface>>([]);
   const [ printConfig, setPrintConfig ] = useState<PrintConfig>({word: true, transcription: true, translation: true, notes: true});
+  const [ wordsLoading, setWordsLoading ] = useState<boolean>(true);
 
   const { getList, deleteWord, wordsFilters, setWordsFilters } = useWordContext();
   const { currentProject } = useProjectContext();
@@ -56,10 +57,12 @@ export default function WordsList() {
   }
 
   const filterWords = async function() {
+    setWordsLoading(true);
     setLastFilters({...wordsFilters});
     const wordsData = await getList(currentProject._id, wordsFilters.search, wordsFilters.word, wordsFilters.transcription, wordsFilters.translation, wordsFilters.notes, wordsFilters.type_id, wordsFilters.categories, wordsPagination.page, wordsPagination.onpage);
     setWords(wordsData.words);
     setWordsPagination({...wordsData.pagination, pages: Math.ceil(wordsData.pagination.total / wordsPagination.onpage)});
+    setWordsLoading(false);
   }
 
   const resetFIlters = async function() {
@@ -116,6 +119,14 @@ export default function WordsList() {
       wordsPagination.page = pagenum;
       filterWords();
     }
+  }
+
+  if (wordsLoading) {
+    return (
+      <div className="loader-container">
+        <div className="loader-round"></div>
+      </div>
+    )
   }
 
   return (
