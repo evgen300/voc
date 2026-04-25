@@ -683,6 +683,9 @@ div.items-list {
         &:nth-of-type(1), &:nth-of-type(2) {
           border: none;
         }
+        &.-notes {
+          font-size: 17px;
+        }
       }
     }
   }

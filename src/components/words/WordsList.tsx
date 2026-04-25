@@ -229,7 +229,7 @@ export default function WordsList() {
                   }
                 </div>
                 <div className="item-field">{ getFormattedFieldText(word.translation, 'translation') }</div>
-                <div className="item-field">{ getFormattedFieldText(word.notes, 'notes') }</div>
+                <div className="item-field -notes">{ getFormattedFieldText(word.notes, 'notes') }</div>
                 <div className="item-action -no-print">
                   <Link href={`/words/${word._id}/edit`}>
                     <i className="fa-solid fa-pencil"></i>
@@ -256,7 +256,7 @@ export default function WordsList() {
                       }
                     </div>
                     <div className="item-field">{ getFormattedFieldText(form.translation, 'translation') }</div>
-                    <div className="item-field">{ getFormattedFieldText(form.notes, 'notes') }</div>
+                    <div className="item-field -notes">{ getFormattedFieldText(form.notes, 'notes') }</div>
                   </div>
                 )
               }) }
