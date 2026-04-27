@@ -16,14 +16,15 @@ export default function WordsAdd() {
     forms: [],
     notes: "",
     categories: [],
-    type_id: ""
+    type_id: "",
+    verb_times: []
   };
 
   const { createWord } = useWordContext();
 
   const addWord = async function (data: any) {
     await createWord(data);
-    router.push('/words');
+    //router.push('/words');
   }
 
   return (

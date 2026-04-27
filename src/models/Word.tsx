@@ -18,6 +18,19 @@ export interface WordFormInterface {
   audio?: string
 };
 
+export interface VerbTimeInterface {
+  time: String,
+  forms: Array<VerbFormInterface>
+};
+
+export interface VerbFormInterface {
+  type: String,
+  word: String,
+  transcription: String,
+  traslation: String,
+  notes: String
+};
+
 export interface WordInterface {
   word: string,
   transcription: string,
@@ -27,7 +40,8 @@ export interface WordInterface {
   audio?: string,
   categories: Array<string>,
   type: string,
-  project_id: string
+  project_id: string,
+  verb_times: Array<VerbTimeInterface>
 };
 
 interface GetListInterface {
@@ -40,6 +54,15 @@ interface GetListInterface {
   type_id?: string,
   categories?: Array<string>
 };
+
+const VerbsFormOrder = [
+  { key: 'first', order: 0 }, 
+  { key: 'second', order: 1 }, 
+  { key: 'third', order: 2 },
+  { key: 'fourth', order: 3 }, 
+  { key: 'fifth', order: 4 }, 
+  { key: 'sixth', order: 5 }
+];
 
 const getList = async function(request: GetListInterface, page: number = 1, onpage: number = 100) {
   let params: any = {};
@@ -192,6 +215,22 @@ const edit = async function (_id: string, data: WordInterface) {
       if (form.audio) {
         data.forms[idx].audio = form.audio.replace(AUDIO_URL, '');
       }
+    });
+  }
+  if (Array.isArray(data.verb_times)) {
+    data.verb_times.sort((a, b) => {
+      return a.time === 'present' ? -1 : 1;
+    });
+    data.verb_times.forEach((v_time, idx) => {
+      data.verb_times[idx].forms = v_time.forms.sort((a, b) => {
+        let orderA = VerbsFormOrder.find(order => {
+          return order.key === a.type;
+        });
+        let orderB = VerbsFormOrder.find(order => {
+          return order.key === b.type;
+        });
+        return orderA && orderB && orderA.hasOwnProperty('order') && orderB.hasOwnProperty('order') ? (orderA.order < orderB.order ? -1 : 1) : -1;
+      });
     });
   }
   const word = await WordSchema.findByIdAndUpdate(_id, data, { returnDocument: 'after' });

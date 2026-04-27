@@ -39,7 +39,7 @@ export default function WordsEdit(params: WordEditParams) {
 
   const updateWord = async function (data: any) {
     await editWord(wordId, data);
-    router.push('/words');
+    //router.push('/words');
   }
 
   if (loading) {

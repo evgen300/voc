@@ -8,7 +8,20 @@ export interface WordFormInterface {
   translation: string,
   notes: string,
   audio?: string
-}
+};
+
+export interface VerbFormInterface {
+  type: String,
+  word: String,
+  transcription: String,
+  translation: String,
+  notes: String
+};
+
+export interface VerbTimeInterface {
+  time: String,
+  forms: Array<VerbFormInterface>
+};
 
 export interface WordInterface {
   word: string,
@@ -20,7 +33,8 @@ export interface WordInterface {
   categories: Array<string>,
   type_id: string,
   project_id?: string,
-  _id?: string
+  _id?: string,
+  verb_times: Array<VerbTimeInterface>
 };
 
 export interface WordsFilterInterface {
@@ -61,6 +75,25 @@ const WordContext = createContext<WordContextInterface>({
   wordsFilters: {},
   setWordsFilters: () => {}
 });
+
+interface VerbFormListInterface {
+  key: String,
+  label: String
+};
+
+export const VerbForms: Array<VerbFormListInterface> = [
+  { key: 'first', label: 'I' }, 
+  { key: 'second', label: 'You' }, 
+  { key: 'third', label: '3rd' },
+  { key: 'fourth', label: 'We' }, 
+  { key: 'fifth', label: 'You - plural' }, 
+  { key: 'sixth', label: 'They' }
+];
+
+export const VerbTimes: Array<VerbFormListInterface> = [
+  { key: 'present', label: 'Present' },
+  { key: 'past', label: 'Past' }
+];
 
 export function WordContextProvider({ children }: any) {
 

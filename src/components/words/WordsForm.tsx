@@ -6,7 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputMask, InputMaskChangeEvent } from 'primereact/inputmask';
 import lodash from "lodash";
 
-import { useWordContext, WordInterface, WordFormInterface } from "@/context/modules/WordsContext";
+import { useWordContext, WordInterface, WordFormInterface, VerbTimes, VerbForms } from "@/context/modules/WordsContext";
 import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 import { useProjectContext } from "@/context/modules/ProjectsContext";
 
@@ -22,7 +22,7 @@ type FormState = {
 export default function WordsForm(props: WordsFormProps) {
   const { wordData, action } = props;
 
-  const [ editWord, setEditWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", forms: [], categories: [], type_id: ""});
+  const [ editWord, setEditWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", forms: [], categories: [], type_id: "", verb_times: []});
 
   const { setWordAudio } = useWordContext();
   const { categories, getCategories, types, getTypes } = useDataContext();
@@ -41,6 +41,13 @@ export default function WordsForm(props: WordsFormProps) {
     let wordForms = [...editWord.forms, {word: "", transcription: "", translation: "", notes: ""}];
     //wordForms.push({word: "", transcription: "", translation: "", notes: ""});
     setEditWord({...editWord, forms: [...wordForms]});
+  }
+
+  const addTime = function () {
+    let wordTimes = [...editWord.verb_times, { time: '', forms: [{type: '', word: "", transcription: "", translation: "", notes: ""}]}];
+    console.log(wordTimes)
+    console.log({...editWord, verb_times: [...wordTimes]})
+    setEditWord({...editWord, verb_times: [...wordTimes]});
   }
   
   const insertForm = function (afterIdx: number) {
@@ -88,7 +95,23 @@ export default function WordsForm(props: WordsFormProps) {
       }
     });
     setForms(nextForms);*/
-  }
+  };
+
+  const insertTimeForm = function (timeIdx: number, afterIdx: number) {
+    const nextTimes = [
+      // Items before the insertion point:
+      ...editWord.verb_times[timeIdx].forms.slice(0, afterIdx + 1),
+      // New item:
+      {...editWord.verb_times[timeIdx].forms[afterIdx- + 1], type: '', word: "", transcription: "", translation: "", notes: ""},
+      // Items after the insertion point:
+      ...editWord.verb_times[timeIdx].forms.slice(afterIdx + 1)
+    ];
+    let verbTimes = editWord.verb_times;
+    verbTimes[timeIdx].forms = nextTimes;
+    //console.log(nextTimes);
+    //console.log({...editWord, verb_times: [...nextTimes]});
+    setEditWord({...editWord, verb_times: [...verbTimes]});
+  };
 
   const deleteForm = function (afterIdx: number) {
     let wordForms = [...editWord.forms].filter((form, idx) => {
@@ -96,6 +119,15 @@ export default function WordsForm(props: WordsFormProps) {
     });
     
     setEditWord({...editWord, forms: [...wordForms]});
+  };
+
+  const deleteTimeForm = function (timeIdx: number, afterIdx: number) {
+    let nextTimes = [...editWord.verb_times];
+    nextTimes[timeIdx].forms = nextTimes[timeIdx].forms.filter((form, idx) => {
+      return idx !== afterIdx;
+    });
+    
+    setEditWord({...editWord, verb_times: [...nextTimes]});
   }
 
   const moveFormUp = function (idx: number) {
@@ -164,6 +196,20 @@ export default function WordsForm(props: WordsFormProps) {
       }
     });
     setEditWord({...editWord, forms: [...changedForms]});
+  };
+
+  const setTimeFormValue = function(timeIdx: number, idx: number, field: string, value: string) {
+    let changedTimes = [...editWord.verb_times];
+    changedTimes[timeIdx].forms = changedTimes[timeIdx].forms.map((form, formIdx) => {
+      if (formIdx !== idx) {
+        return {...form};
+      } else {
+        let changedForm = {...form};
+        changedForm[field as keyof WordFormInterface] = value;
+        return changedForm;
+      }
+    });
+    setEditWord({...editWord, verb_times: [...changedTimes]});
   }
 
   const setWordValue = function(field: string, value: string) {
@@ -199,6 +245,18 @@ export default function WordsForm(props: WordsFormProps) {
     editWord.categories = categories;
     setEditWord({...editWord});
   }
+
+  const setTimeValue = function (timeIdx: number, time: string) {
+    let nextTimes = [...editWord.verb_times];
+    nextTimes[timeIdx].time = time;
+    setEditWord({...editWord, verb_times: nextTimes});
+  };
+
+  const setTimeFormType = function(timeIdx: number, formIdx: number, type: string) {
+    let nextTimes = [...editWord.verb_times];
+    nextTimes[timeIdx].forms[formIdx].type = type;
+    setEditWord({...editWord, verb_times: [...nextTimes]});
+  };
 
   const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, new FormData());
 
@@ -339,10 +397,78 @@ export default function WordsForm(props: WordsFormProps) {
               <div className="button" onClick={() => {
                 addForm()
               }}>
-                + Add row
+                + Add form
               </div>
             </div>
           </div>
+          { editWord.type_id === "69c6c3902820de2358f30d7f" ? (
+            <>
+              <div className="form-row">
+                <div className="form-field">Verb times</div>
+                <div className="form-field">
+                  <div className="button" onClick={() => {
+                    addTime()
+                  }}>
+                    + Add time
+                  </div>
+              </div>
+              </div>
+              { editWord.verb_times.map((v_time, idx) => {
+                return (
+                  <div key={ idx }>
+                  <div className="form-rows -cols-6">
+                    <div className="form-field">
+                      <div className="field-label">Time <Dropdown value={v_time.time} options={VerbTimes} optionLabel="label" optionValue="key" onChange={(e) => setTimeValue(idx, e.value)} /></div>
+                    </div>
+                  </div>
+                  { v_time.forms.map((form, formIdx) => {
+                  return (<div key={ formIdx } className="form-row -cols-5 -verb-time-forms">
+                    <div className="form-field">
+                      <div className="field-value">
+                        <Dropdown value={form.type} options={VerbForms} optionLabel="label" optionValue="key" onChange={(e) => setTimeFormType(idx, formIdx, e.value)} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                      <div className="field-value">
+                        <input value={form.word} onChange={(e) => {
+                          setTimeFormValue(idx, formIdx, 'word', e.target.value);
+                        }} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                      <div className="field-value">
+                        <input value={form.transcription} onChange={(e) => {
+                          setTimeFormValue(idx, formIdx, 'transcription', e.target.value);
+                        }} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                      <div className="field-value">
+                        <input value={form.translation} onChange={(e) => {
+                          setTimeFormValue(idx, formIdx, 'translation', e.target.value);
+                        }} />
+                      </div>
+                    </div>
+                    <div className="form-field">
+                      <div className="field-value">
+                        <textarea value={form.notes} rows={3} cols={30} onChange={(e) => {
+                          setTimeFormValue(idx, formIdx, 'notes', e.target.value);
+                        }}></textarea>
+                        <i className="fa fa-plus" onClick={(e) => {
+                          insertTimeForm(idx, formIdx);
+                        }}></i>
+                        <i className="fa fa-minus" onClick={() => {
+                          deleteTimeForm(idx, formIdx);
+                        }}></i>
+                      </div>
+                    </div>
+                  </div>)
+                  }) }
+                  </div>
+                )
+              }) }
+            </>
+          ) : '' }
           <div className="form-row -cols-6">
             <div className="form-field"></div>
             <div className="form-field"></div>

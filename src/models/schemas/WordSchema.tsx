@@ -6,7 +6,19 @@ interface WordFormInterface {
   translation: string,
   notes: string,
   audio: string
-}
+};
+interface VerbFormInterface {
+  type: String,
+  word: String,
+  transcription: String,
+  translation: String,
+  notes: String
+};
+
+interface VerbTimeInterface {
+  time: String,
+  forms: Array<VerbFormInterface>
+};
 
 const WordSchema = new mongoose.Schema({
   word: {
@@ -25,7 +37,8 @@ const WordSchema = new mongoose.Schema({
   audio: String,
   categories: Array<String>,
   type_id: String,
-  project_id: String
+  project_id: String,
+  verb_times: Array<VerbTimeInterface>
 });
 
 export default mongoose.models.Word || mongoose.model('Word', WordSchema);

@@ -5,6 +5,8 @@ import "@/style/global.scss";
 import "@/style/controls.scss";
 import "@/style/dialogs.scss";
 import "@/style/loaders.scss";
+import "primereact/resources/primereact.min.css";
+import "primereact/resources/themes/lara-dark-green/theme.css";
 import { cookies } from "next/headers";
 import { CookiesProvider } from 'next-client-cookies/server';
 import { MainContextProvider } from "@/context/MainContext";
