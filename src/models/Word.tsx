@@ -1,5 +1,6 @@
 import fse from "fs-extra";
 import { Md5 } from "ts-md5";
+import { diffChars } from "diff";
 
 import WordSchema from "@/models/schemas/WordSchema";
 import Projects from "@/models/Projects";
@@ -64,7 +65,18 @@ const VerbsFormOrder = [
   { key: 'sixth', order: 5 }
 ];
 
-const getList = async function(request: GetListInterface, page: number = 1, onpage: number = 100) {
+const VerbTimesOrder = [
+  { key: 'present', order: 0 },
+  { key: 'present_imp', order: 1 },
+  { key: 'continuous', order: 2 },
+  { key: 'past', order: 3 },
+  { key: 'future', order: 4 },
+  { key: 'conditional', order: 5 },
+  { key: 'passive', order: 6 }
+];
+
+const getList = async function(request: GetListInterface, page: number = 1, onpage: number = 30) {
+  //await WordSchema.updateMany({type_id: "69dc93518fabedb3cefb8e6d", project_id: "69c6d5b82820de2358f30d89"}, {type_id: "adverb"});
   let params: any = {};
   let orParams = [];
   Object.keys(request).forEach(field => {
@@ -92,6 +104,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         params['$or'] = [
           {word: wordRegex},
           {'forms.word': wordRegex},
+          {'verb_times.word': wordRegex},
         ];
         break;
       case 'transcription':
@@ -106,6 +119,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         params['$or'] = [
           {translation: translationRegex},
           {'forms.translation': translationRegex},
+          {'verb_times.translation': translationRegex},
         ];
         break;
       case 'notes':
@@ -219,7 +233,19 @@ const edit = async function (_id: string, data: WordInterface) {
   }
   if (Array.isArray(data.verb_times)) {
     data.verb_times.sort((a, b) => {
-      return a.time === 'present' ? -1 : 1;
+      const timeA = VerbTimesOrder.find(time => {
+        return time.key === a.time;
+      });
+      const timeB = VerbTimesOrder.find(time => {
+        return time.key === b.time;
+      });
+      if (!timeA) {
+        return 1;
+      }
+      if (!timeB) {
+        return -1;
+      }
+      return timeA?.order < timeB?.order ? -1 : 1;
     });
     data.verb_times.forEach((v_time, idx) => {
       data.verb_times[idx].forms = v_time.forms.sort((a, b) => {
@@ -286,11 +312,172 @@ const setAudio = async function (word_id: string, part_idx: number | null = null
   return edit(word_id, word);
 }
 
+interface GetRandInterface {
+  limit: number | null,
+  project_id: string
+};
+
+const getRandForTest = async function (request: GetRandInterface = { limit: 20, project_id: '' }) {
+  const limit = request.limit || 20;
+  const list = await WordSchema.aggregate([
+    { $match: { project_id: request.project_id } },
+    /*{ $addFields: { randomField: { $rand: {} } } },
+    { $limit: request.limit || 20 },
+    { $sort: { randomField: 1 } }*/
+    { $sample: { size: limit } }
+  ]);
+  /*let test: SignTestInterface = {
+    tasks: [],
+    score: 0,
+    max_score: count
+  };
+  list.forEach((sign) => {
+    let titles: Array<string> = [];
+    titles.push(sign.title);
+    let signs = list.filter((s) => {
+      return s.code !== sign.code;
+    });
+    titles = lodash.shuffle(lodash.sampleSize(signs, variants - 1).reduce((acc, variant) => {
+      acc.push(variant.title);
+      return acc;
+    }, titles));
+    console.log(sign, titles);
+    test.tasks.push({
+      sign: {
+        image: sign.image,
+        hash: Md5.hashStr(sign._id + sign.code)
+      },
+      variants: titles
+    });
+  });
+  return test;*/
+  return list;
+}
+interface TranslateTaskInterface {
+  word: string,
+  translation: string,
+  correct_answer?: string,
+  correct?: boolean,
+  answer_correction?: string,
+  type_id: string
+}
+interface TranslateFromTestInterface {
+  tasks: Array<TranslateTaskInterface>
+}
+
+const getTranslateFromTest = async function (request: GetRandInterface) {
+  const list = await getRandForTest(request);
+  let response: TranslateFromTestInterface = {
+    tasks: []
+  };
+  list.forEach(word => {
+    response.tasks.push({
+      word: word.word,
+      translation: '',
+      type_id: word.type_id
+    });
+  });
+
+  return response;
+}
+
+const getTranslateToTest = async function (request: GetRandInterface) {
+  const list = await getRandForTest(request);
+  let response: TranslateFromTestInterface = {
+    tasks: []
+  };
+  list.forEach(word => {
+    response.tasks.push({
+      word: word.translation,
+      translation: '',
+      type_id: word.type_id
+    });
+  });
+
+  return response;
+}
+
+const validateFromTest = async function(test: TranslateFromTestInterface, project_id: string) {
+  let params: any = {
+    '$or': []
+  };
+  test.tasks.forEach((task, idx) => {
+    params['$or'].push(
+      {word: task.word}
+    );
+  });
+  const words = await WordSchema.find(params);
+  test.tasks.forEach(task => {
+    const word = words.find(w => {
+      return w.word === task.word;
+    });
+    if (word) {
+      task.correct_answer = word.translation;
+      task.correct = task.translation === word.translation;
+      if (!task.correct) {
+        const answerDiff = diffChars(task.translation, task.correct_answer || '');
+        let answerCorrection = '';
+        answerDiff.forEach(item => {
+          if (!item.added && !item.removed) {
+            answerCorrection+= item.value;
+          } else if (item.added) {
+            answerCorrection+= `+${item.value}+`;
+          } else if (item.removed) {
+            answerCorrection+= `-${item.value}-`;
+          }
+        });
+        task.answer_correction = answerCorrection;
+      }
+    }
+  });
+  return test;
+}
+
+const validateToTest = async function(test: TranslateFromTestInterface, project_id: string) {
+  let params: any = {
+    '$or': []
+  };
+  test.tasks.forEach((task, idx) => {
+    params['$or'].push(
+      {translation: task.word}
+    );
+  });
+  const words = await WordSchema.find(params);
+  test.tasks.forEach(task => {
+    const word = words.find(w => {
+      return w.translation === task.word;
+    });
+    if (word) {
+      task.correct_answer = word.word;
+      task.correct = task.translation === word.word;
+      if (!task.correct) {
+        const answerDiff = diffChars(task.translation, task.correct_answer || '');
+        let answerCorrection = '';
+        answerDiff.forEach(item => {
+          if (!item.added && !item.removed) {
+            answerCorrection+= item.value;
+          } else if (item.added) {
+            answerCorrection+= `+${item.value}+`;
+          } else if (item.removed) {
+            answerCorrection+= `-${item.value}-`;
+          }
+        });
+        task.answer_correction = answerCorrection;
+      }
+    }
+  });
+  return test;
+}
+
 export default {
   getList,
   create,
   edit,
   get,
   setAudio,
-  remove
+  remove,
+  getTranslateFromTest,
+  validateFromTest,
+  getTranslateToTest,
+  validateToTest
 }

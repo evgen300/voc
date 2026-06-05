@@ -13,6 +13,7 @@ import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 
 import WordsSearchResult from "@/components/words/WordsSearchResult";
 import Pagination from "@/components/Pagination";
+import { VerbTimeInterface } from "@/models/Word";
 
 interface PrintConfig {
   word: boolean,
@@ -31,7 +32,7 @@ export default function WordsList() {
   const [ printConfig, setPrintConfig ] = useState<PrintConfig>({word: true, transcription: true, translation: true, notes: true});
   const [ wordsLoading, setWordsLoading ] = useState<boolean>(true);
 
-  const { getList, deleteWord, wordsFilters, setWordsFilters } = useWordContext();
+  const { getList, deleteWord, wordsFilters, setWordsFilters, verbTimeLabel, verbTimeFormLabel } = useWordContext();
   const { currentProject } = useProjectContext();
   const { getTypes, types, getCategories, categories } = useDataContext();
 
@@ -154,10 +155,10 @@ export default function WordsList() {
             Notes:<br /><input name="notes" value={ wordsFilters.notes || "" } onChange={(e) => setWordsFilters({...wordsFilters, notes: e.target.value})} />
           </div>
           <div className="item-field">
-            Type:<br /><Dropdown value={wordsFilters.type_id} options={types} onChange={(e: DropdownChangeEvent) => setWordsFilters({...wordsFilters, type_id: e.value})} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
+            Type:<br /><Dropdown value={wordsFilters.type_id} options={types} onChange={(e: DropdownChangeEvent) => setWordsFilters({...wordsFilters, type_id: e.value})} optionLabel="name" optionValue="key" />
           </div>
           <div className="item-field">
-            Categories:<br /><MultiSelect value={wordsFilters.categories} options={categoriesFilter} onChange={(e: MultiSelectChangeEvent) => setWordsFilters({...wordsFilters, categories: e.value})} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
+            Categories:<br /><MultiSelect value={wordsFilters.categories} options={categoriesFilter} onChange={(e: MultiSelectChangeEvent) => setWordsFilters({...wordsFilters, categories: e.value})} optionLabel="name" optionValue="_id" />
           </div>
         </div>
         <div className="item-row -rows-5">
@@ -239,6 +240,38 @@ export default function WordsList() {
                   }} className="fa-solid fa-trash"></i>
                 </div>
               </div>
+              { word.type_id === "verb" && Array.isArray(word.verb_times) && word.verb_times.length > 0 ? (
+                <>
+                  {word.verb_times.map((v_time, v_timeIdx) => {
+                    return (
+                      <div key={ v_timeIdx }>
+                        <div className="item-row -rows-6">
+                          <div className="item-field"></div>
+                          <div className="item-field">
+                            <b>{ verbTimeLabel(v_time.time) }</b>
+                          </div>
+                        </div>
+                        { v_time.forms.map((v_time_form, v_time_formIdx) => {
+                          return (
+                            <div className="item-row -rows-6" key={ v_time_formIdx }>
+                              <div className="item-field">
+                                { verbTimeFormLabel(v_time_form.type) }
+                              </div>
+                              <div className="item-field">
+                              { getFormattedFieldText(v_time_form.word, 'word') }
+                              </div>
+                              <div className="item-field">[{ v_time_form.transcription }]</div>
+                              <div className="item-field">
+                              { getFormattedFieldText(v_time_form.translation, 'translation') }
+                              </div>
+                            </div>
+                            )
+                          }) }
+                      </div>
+                    )
+                  })}
+                </>
+              ) : '' }
               { word.forms.map((form, formIdx) => {
                 return (
                   <div key={formIdx} className={`item-row -rows-6 ` + getPrintColsConfig()}>

@@ -12,6 +12,7 @@
     "@elevenlabs/elevenlabs-js": "^2.40.0",
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.24",
+    "diff": "^9.0.0",
     "fs-extra": "^11.3.4",
     "lodash": "^4.17.23",
     "mongoose": "^9.3.3",

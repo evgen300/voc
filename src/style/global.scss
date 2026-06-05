@@ -91,7 +91,7 @@ body {
           &.-cols-5 {
             grid-template-columns: 20% 5% 20% 20% 20%;
             &.-verb-time-forms {
-              grid-template-columns: 10% 20% 20% 25% 25%;
+              grid-template-columns: 10% 25% 25% 25% 15%;
             }
           }
           &.-cols-2 {
@@ -472,6 +472,35 @@ div.items-list {
     .item-row {
       &.-rows-5 {
         grid-template-columns: 20% 20% 20% 20% 20%;
+      }
+    }
+  }
+  &.practice-form {
+    input {
+      font-size: 23px;
+    }
+    .-correct {
+      color: green;
+    }
+    .-wrong {
+      color: red;
+    }
+    .correct-answer {
+      font-size: 17px;
+      display: inline-block;
+      margin: 0px 2px;
+      font-style: italic;
+    }
+    .answer-correction {
+      display: inline-block;
+      margin: 0px 2px;
+      .removed {
+        color: red;
+        text-decoration: line-through;
+      }
+      .added {
+        color: green;
+        text-decoration: underline;
       }
     }
   }

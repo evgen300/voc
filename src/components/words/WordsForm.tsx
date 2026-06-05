@@ -23,6 +23,7 @@ export default function WordsForm(props: WordsFormProps) {
   const { wordData, action } = props;
 
   const [ editWord, setEditWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", forms: [], categories: [], type_id: "", verb_times: []});
+  const [ saved, setSaved ] = useState<boolean>(false);
 
   const { setWordAudio } = useWordContext();
   const { categories, getCategories, types, getTypes } = useDataContext();
@@ -69,32 +70,6 @@ export default function WordsForm(props: WordsFormProps) {
       ...editWord.forms.slice(afterIdx + 1)
     ];
     setEditWord({...editWord, forms: [...nextForms]});
-    return;
-    let wordForms = lodash.cloneDeep(forms);
-    let before = lodash.cloneDeep(wordForms).splice(afterIdx + 1);
-    let after = lodash.cloneDeep(wordForms).splice(0, afterIdx + 1);
-    const newForms = [...after, {word: "", transcription: "", translation: "", notes: ""}, ...before];
-    console.log(newForms);
-    setForms([]);
-    setTimeout(() => {
-      setForms(lodash.cloneDeep(newForms));
-    }, 3000);
-    newForms.forEach((form, idx) => {
-      Object.keys(form).forEach((field) => {
-        console.log(idx, field, form[field]);
-        //setFormValue(idx, field, form[field]);
-      });
-    });
-    /*const nextForms = forms.map((form, idx) => {
-      if (idx <= afterIdx) {
-        return form;
-      } else if (idx === afterIdx + 1) {
-        return {word: "", transcription: "", translation: "", notes: ""};
-      } else {
-        return wordData.forms[idx - 1];
-      }
-    });
-    setForms(nextForms);*/
   };
 
   const insertTimeForm = function (timeIdx: number, afterIdx: number) {
@@ -183,6 +158,10 @@ export default function WordsForm(props: WordsFormProps) {
     let insertData = {...editWord};
     insertData.project_id = currentProject._id;
     await action(insertData);
+    setSaved(true);
+    setTimeout(() => {
+      setSaved(false);
+    }, 2000);
   }
 
   const setFormValue = function(idx: number, field: string, value: string) {
@@ -258,6 +237,18 @@ export default function WordsForm(props: WordsFormProps) {
     setEditWord({...editWord, verb_times: [...nextTimes]});
   };
 
+  const filteredTimes = function(current: string = '') {
+    return VerbTimes.filter(vTime => {
+      if (current === vTime.key) {
+        return true;
+      }
+      const present = editWord.verb_times.find(word_time => {
+        return word_time.time === vTime.key;
+      });
+      return !present;
+    });
+  }
+
   const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, new FormData());
 
   return (
@@ -309,34 +300,34 @@ export default function WordsForm(props: WordsFormProps) {
           </div>
           <div className="form-row -cols-2">
             <div className="form-field">
-              <div className="field-label">Type</div>
-              <div className="field-value">
-                <Dropdown value={editWord.type_id} options={types} onChange={(e: MultiSelectChangeEvent) => setTypeId(e.value)} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
+              <div className="field-label">Type&nbsp;
+                <Dropdown value={editWord.type_id} options={types} onChange={(e: MultiSelectChangeEvent) => setTypeId(e.value)} optionLabel="name" optionValue="key" />
               </div>
             </div>
             <div className="form-field">
-              <div className="field-label">Category</div>
-              <div className="field-value">
-                <MultiSelect value={editWord.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategories(e.value)} optionLabel="name" optionValue="_id" panelClassName="voc-multiselect" scrollHeight="250px" />
+              <div className="field-label">Category&nbsp;
+                <MultiSelect value={editWord.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategories(e.value)} optionLabel="name" optionValue="_id" />
               </div>
             </div>
           </div>
-          <div className="form-row -cols-6">
-            <div className="form-field"></div>
-            <div className="form-field">
-              <div className="field-label">Word</div>
+          { editWord.forms.length > 0 ? (
+            <div className="form-row -cols-6">
+              <div className="form-field"></div>
+              <div className="form-field">
+                <div className="field-label">Word</div>
+              </div>
+              <div className="form-field"></div>
+              <div className="form-field">
+                <div className="field-label">Transcription</div>
+              </div>
+              <div className="form-field">
+                <div className="field-label">Translation</div>
+              </div>
+              <div className="form-field">
+                <div className="field-label">Notes</div>
+              </div>
             </div>
-            <div className="form-field"></div>
-            <div className="form-field">
-              <div className="field-label">Transcription</div>
-            </div>
-            <div className="form-field">
-              <div className="field-label">Translation</div>
-            </div>
-            <div className="form-field">
-              <div className="field-label">Notes</div>
-            </div>
-          </div>
+          ) : '' }
           { editWord.forms.map((form, idx) => {
             return (
               <div key={ idx } className="form-row -cols-6">
@@ -394,31 +385,26 @@ export default function WordsForm(props: WordsFormProps) {
           <div className="form-row">
             <div className="form-field"></div>
             <div className="form-field">
-              <div className="button" onClick={() => {
+              <div className="button -additional" onClick={() => {
                 addForm()
               }}>
-                + Add form
+                + add
               </div>
             </div>
           </div>
-          { editWord.type_id === "69c6c3902820de2358f30d7f" ? (
+          { editWord.type_id === "verb" ? (
             <>
               <div className="form-row">
-                <div className="form-field">Verb times</div>
-                <div className="form-field">
-                  <div className="button" onClick={() => {
+                <div className="form-field">Verb times <span className="button -additional" onClick={() => {
                     addTime()
-                  }}>
-                    + Add time
-                  </div>
-              </div>
+                  }}>+ add</span></div>
               </div>
               { editWord.verb_times.map((v_time, idx) => {
                 return (
                   <div key={ idx }>
                   <div className="form-rows -cols-6">
                     <div className="form-field">
-                      <div className="field-label">Time <Dropdown value={v_time.time} options={VerbTimes} optionLabel="label" optionValue="key" onChange={(e) => setTimeValue(idx, e.value)} /></div>
+                      <div className="field-label">Time <Dropdown value={v_time.time} options={filteredTimes(v_time.time)} optionLabel="label" optionValue="key" onChange={(e) => setTimeValue(idx, e.value)} /></div>
                     </div>
                   </div>
                   { v_time.forms.map((form, formIdx) => {
@@ -451,7 +437,7 @@ export default function WordsForm(props: WordsFormProps) {
                     </div>
                     <div className="form-field">
                       <div className="field-value">
-                        <textarea value={form.notes} rows={3} cols={30} onChange={(e) => {
+                        <textarea value={form.notes} rows={3} cols={7} onChange={(e) => {
                           setTimeFormValue(idx, formIdx, 'notes', e.target.value);
                         }}></textarea>
                         <i className="fa fa-plus" onClick={(e) => {
@@ -476,9 +462,13 @@ export default function WordsForm(props: WordsFormProps) {
             <div className="form-field"></div>
             <div className="form-field"></div>
             <div className="form-field">
-              <button type="submit" className="button -primary" disabled={ pending }>
-                { pending ? 'Saving' : 'Save' }
-              </button>
+              { saved ? (
+                <span className="button -additional">Saved</span>
+              ) : (
+                <button type="submit" className="button -primary" disabled={ pending }>
+                  { pending ? 'Saving' : 'Save' }
+                </button>
+              )}
             </div>
           </div>
         </div>

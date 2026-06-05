@@ -55,7 +55,9 @@ interface WordContextInterface {
   setWordAudio: Function,
   deleteWord: Function,
   wordsFilters: WordsFilterInterface,
-  setWordsFilters: Function
+  setWordsFilters: Function,
+  verbTimeLabel: Function,
+  verbTimeFormLabel: Function
 };
 
 export interface PaginationInterface {
@@ -73,7 +75,9 @@ const WordContext = createContext<WordContextInterface>({
   setWordAudio: () => {},
   deleteWord: () => {},
   wordsFilters: {},
-  setWordsFilters: () => {}
+  setWordsFilters: () => {},
+  verbTimeLabel: () => {},
+  verbTimeFormLabel: () => {}
 });
 
 interface VerbFormListInterface {
@@ -86,20 +90,25 @@ export const VerbForms: Array<VerbFormListInterface> = [
   { key: 'second', label: 'You' }, 
   { key: 'third', label: '3rd' },
   { key: 'fourth', label: 'We' }, 
-  { key: 'fifth', label: 'You - plural' }, 
+  { key: 'fifth', label: 'You (pl)' }, 
   { key: 'sixth', label: 'They' }
 ];
 
 export const VerbTimes: Array<VerbFormListInterface> = [
   { key: 'present', label: 'Present' },
-  { key: 'past', label: 'Past' }
+  { key: 'present_imp', label: 'Present imperative' },
+  { key: 'continuous', label: 'Present cont' },
+  { key: 'past', label: 'Past' },
+  { key: 'future', label: 'Future' },
+  { key: 'conditional', label: 'Conditional' },
+  { key: 'passive', label: 'Passive' }
 ];
 
 export function WordContextProvider({ children }: any) {
 
   const [ wordsFilters, setWordsFilters ] = useState<WordsFilterInterface>({});
 
-  const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "", type_id: string = "", categories: Array<string> = [], page: number = 1, onpage: number = 100) {
+  const getList = async function (project_id: string, searchString: string = "", word: string = "", tarnscription: string = "", translation: string = "", notes: string = "", type_id: string = "", categories: Array<string> = [], page: number = 1, onpage: number = 30) {
     let list = await fetch(`/api/words?project_id=${project_id}&search=${searchString}&word=${word}&transcription=${tarnscription}&translation=${translation}&notes=${notes}&type_id=${type_id}&categories=${categories}&page=${page}&onpage=${onpage}`);
     return await list.json();
   }
@@ -155,7 +164,21 @@ export function WordContextProvider({ children }: any) {
       }
     });
     return await response.json();
-  }
+  };
+
+  const verbTimeLabel = function(key: string) {
+    const v_time = VerbTimes.find((search_time) => {
+      return search_time.key === key;
+    });
+    return v_time ? v_time.label : '';
+  };
+
+  const verbTimeFormLabel = function (key: string) {
+    const v_time = VerbForms.find((search_time) => {
+      return search_time.key === key;
+    });
+    return v_time ? v_time.label : '';
+  };
 
   return (
     <WordContext.Provider value={{
@@ -166,7 +189,9 @@ export function WordContextProvider({ children }: any) {
       setWordAudio,
       deleteWord,
       wordsFilters,
-      setWordsFilters
+      setWordsFilters,
+      verbTimeLabel,
+      verbTimeFormLabel
     }}>
       { children }
     </WordContext.Provider>

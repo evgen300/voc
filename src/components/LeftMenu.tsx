@@ -21,6 +21,10 @@ export default function LeftMenuPage() {
     'phrases': {
       title: 'Phrases',
       icon: 'fa-solid fa-comment'
+    },
+    'practice': {
+      title: 'Practice',
+      icon: 'fa-solid fa-dumbbell'
     }
   };
 

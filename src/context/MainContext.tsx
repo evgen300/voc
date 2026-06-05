@@ -6,6 +6,7 @@ import { WordContextProvider } from "@/context/modules/WordsContext";
 import { DataContextProvider } from "@/context/modules/DataContext";
 import { ProjectContextProvider } from "@/context/modules/ProjectsContext";
 import { PhraseContextProvider } from "@/context/modules/PhrasesContext";
+import { PracticeContextProvider } from "@/context/modules/PracticeContext";
 
 const MainContext = createContext({});
 
@@ -18,7 +19,9 @@ export function MainContextProvider ({ children }: any ) {
         <WordContextProvider>
           <PhraseContextProvider>
             <DataContextProvider>
-              {children}
+              <PracticeContextProvider>
+                {children}
+              </PracticeContextProvider>
             </DataContextProvider>
           </PhraseContextProvider>
         </WordContextProvider>

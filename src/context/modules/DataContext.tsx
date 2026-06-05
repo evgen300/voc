@@ -4,7 +4,8 @@ import { createContext, useContext, useState } from "react";
 
 export interface DataInterface {
   name: string,
-  _id: string
+  _id: string,
+  key?: string
 }
 
 export interface LanguageInterface {

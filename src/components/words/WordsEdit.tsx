@@ -15,7 +15,7 @@ export default function WordsEdit(params: WordEditParams) {
 
   const { wordId } = params;
 
-  const [ word, setWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", categories: [], type_id: "", forms: []});
+  const [ word, setWord ] = useState<WordInterface>({word: "", transcription: "", translation: "", notes: "", categories: [], type_id: "", forms: [], verb_times: []});
   const [ loading, setLoading ] = useState<boolean>(true);
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function WordsEdit(params: WordEditParams) {
   }
 
   const updateWord = async function (data: any) {
-    await editWord(wordId, data);
+    setWord(await editWord(wordId, data));
     //router.push('/words');
   }
 

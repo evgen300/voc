@@ -23,8 +23,12 @@ export default function WordsAdd() {
   const { createWord } = useWordContext();
 
   const addWord = async function (data: any) {
-    await createWord(data);
-    //router.push('/words');
+    const response = await createWord(data);
+    if (response && response._id) {
+      router.push('/words/' + response._id + '/edit');
+    } else {
+      router.push('/words');
+    }
   }
 
   return (
