@@ -5,14 +5,14 @@ import { NextRequest } from 'next/server';
 
 import dbConnect from "@/lib/mongodb";
 import Word from '@/models/Word';
-//import { getServerSession } from 'next-auth/next';
-//import { authOptions } from '@/pages/api/auth/[...nextauth]';
+import { getServerSession } from 'next-auth/next';
+import { authOptions } from '@/lib/auth';
 
 export async function GET(req: NextRequest, res: NextApiResponse) {
-  /*const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     return new Response(JSON.stringify([]), { status: 401 });
-  }*/
+  }
   let project_id = req.nextUrl.searchParams.get('project_id');
   let search = req.nextUrl.searchParams.get('search');
   let word = req.nextUrl.searchParams.get('word');
@@ -32,10 +32,10 @@ export async function GET(req: NextRequest, res: NextApiResponse) {
 }
 
 export async function POST(req: NextRequest) {
-  /*const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     return new Response(JSON.stringify([]), { status: 401 });
-  }*/
+  }
   await dbConnect();
   //const list = await Company.create(session.user.roles.includes('admin') ? null : session.user.id);
   let requestData = await req.json();

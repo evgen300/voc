@@ -11,11 +11,11 @@ export interface WordFormInterface {
 };
 
 export interface VerbFormInterface {
-  type: String,
-  word: String,
-  transcription: String,
-  translation: String,
-  notes: String
+  type: string,
+  word: string,
+  transcription: string,
+  translation: string,
+  notes: string
 };
 
 export interface VerbTimeInterface {

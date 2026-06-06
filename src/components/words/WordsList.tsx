@@ -14,6 +14,7 @@ import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 import WordsSearchResult from "@/components/words/WordsSearchResult";
 import Pagination from "@/components/Pagination";
 import { VerbTimeInterface } from "@/models/Word";
+import LoaderMain from "@/components/LoaderMain";
 
 interface PrintConfig {
   word: boolean,
@@ -68,18 +69,21 @@ export default function WordsList() {
 
   const resetFIlters = async function() {
     wordsPagination.page = 1;
-    let newFilters = {...wordsFilters};
-    Object.keys(wordsFilters).forEach(filterFiled => {
-      newFilters[filterFiled as keyof WordsFilterInterface] = "";
-    });
+    const newFilters: WordsFilterInterface = {
+      search: "",
+      word: "",
+      transcription: "",
+      translation: "",
+      notes: "",
+      type_id: "",
+      categories: []
+    };
     setWordsFilters(newFilters);
     await filterWords();
   }
 
-  const setFilterValue = function(field: string, value: string) {
-    let wordFilters = wordsFilters;
-    wordFilters[field as keyof WordsFilterInterface] = value;
-    setWordsFilters(wordFilters);
+  const setFilterValue = function(field: Exclude<keyof WordsFilterInterface, 'categories'>, value: string) {
+    setWordsFilters({ ...wordsFilters, [field]: value });
   }
 
   const playAudio = function (url: string) {
@@ -124,9 +128,7 @@ export default function WordsList() {
 
   if (wordsLoading) {
     return (
-      <div className="loader-container">
-        <div className="loader-round"></div>
-      </div>
+      <LoaderMain></LoaderMain>
     )
   }
 

@@ -12,7 +12,7 @@ export default function MainPage({ project_id, children = (<div></div>) }: Reado
   project_id: string
 }>) {
 
-  if (!project_id) {
+  if (true || !project_id) {
     return (
       <ProjectsPage></ProjectsPage>
     )

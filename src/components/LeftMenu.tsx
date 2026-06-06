@@ -9,7 +9,7 @@ export default function LeftMenuPage() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const links = {
+  const links: any = {
     'projects': {
       title: 'Projects',
       icon: 'fa-solid fa-shield'

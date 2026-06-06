@@ -16,9 +16,11 @@ class FullProjectInfo {
       this.language = data.hasOwnProperty('language') ? data.language : {};
     }
 }
-
-const getList = async function () {
-  let list = await ProjectsSchema.find();
+interface ProjectsRequest {
+  user_id: string
+}
+const getList = async function (request: ProjectsRequest) {
+  let list = await ProjectsSchema.find({ user_id: request.user_id });
   let langs = await Languages.getList();
   let response: Array<FullProjectInfo> = [];
   list.forEach(project => {

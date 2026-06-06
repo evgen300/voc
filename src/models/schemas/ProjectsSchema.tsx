@@ -8,6 +8,10 @@ const ProjectSchema = new mongoose.Schema({
   language_id: {
     type: String,
     required: true
+  },
+  user_id: {
+    type: String,
+    required: true
   }
 });
 
