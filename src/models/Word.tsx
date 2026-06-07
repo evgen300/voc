@@ -46,7 +46,7 @@ export interface WordInterface {
 };
 
 interface GetListInterface {
-  project_id?: string,
+  project_id: string,
   search?: string,
   word?: string,
   transcription?: string,
@@ -79,6 +79,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
   //await WordSchema.updateMany({type_id: "69dc93518fabedb3cefb8e6d", project_id: "69c6d5b82820de2358f30d89"}, {type_id: "adverb"});
   let params: any = {};
   let orParams = [];
+  const project = await Projects.getFullProjectInfo(request.project_id);
   Object.keys(request).forEach(field => {
     let fieldValue = request[field as keyof GetListInterface];
     if (fieldValue && fieldValue.length)
@@ -165,7 +166,10 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         data: [{ $sort: { "word": 1 } }, { $skip: ( page - 1 ) * onpage }, { $limit: onpage }],
       },
     }
-  ]);
+  ],
+  {
+    collation: { locale: project.language.code, strength: 2 } // Ignores case differences
+  });
   //let words = await WordSchema.find(params).sort("word").limit(100);
   if (!pagedData[0] || !Array.isArray(pagedData[0].data) || pagedData[0].data.length === 0) {
     return {words: [], pagination: {total: 0, page: 1, onpage: onpage}};
