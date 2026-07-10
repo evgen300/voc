@@ -22,6 +22,6 @@ const UserSchema = new mongoose.Schema({
   phone: {
     type: String
   }
-});
+}, { bufferCommands: false });
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

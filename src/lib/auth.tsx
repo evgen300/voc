@@ -53,7 +53,10 @@ export const authOptions: NextAuthOptions = {
     // How often the session should be updated in seconds.
     // If a user is active, their session expiry will be extended by this amount.
     // Set to 0 to disable session rolling.
-    updateAge: 60 * 60, // 1 hour
+    //updateAge: 1 * 60, // 30 min
+  },
+  jwt: {
+    maxAge: 60 * 60 * 24 * 30
   },
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
@@ -105,7 +108,12 @@ export const authOptions: NextAuthOptions = {
         const userDb = await UserSchema.findOne({ _id: token.uid });
         token.lang = userDb.lang;
       }
-      return Promise.resolve(token);
+      return {
+        ...token,
+        accessToken: account?.access_token,
+        refreshToken: account?.refresh_token,
+        accessTokenExpires: Date.now() + (account?.expires_at || 1) * 1000
+      };
     },
     async session({ session, token, trigger }) {
       session.user.id = token.sub as string;

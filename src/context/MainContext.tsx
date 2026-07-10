@@ -16,7 +16,7 @@ export function MainContextProvider ({ children }: any ) {
   return (
     <MainContext.Provider value={{
     }}>
-      <SessionProvider>
+      <SessionProvider refetchInterval={ 60 }>
         <AuthContextProvider>
           <ProjectContextProvider>
             <WordContextProvider>
