@@ -6,7 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { InputMask, InputMaskChangeEvent } from 'primereact/inputmask';
 import lodash from "lodash";
 
-import { useWordContext, WordInterface, WordFormInterface, VerbTimes, VerbForms } from "@/context/modules/WordsContext";
+import { useWordContext, WordInterface, WordFormInterface, VerbFormInterface, VerbTimes, VerbForms } from "@/context/modules/WordsContext";
 import { useDataContext, DataInterface } from "@/context/modules/DataContext";
 import { useProjectContext } from "@/context/modules/ProjectsContext";
 
@@ -154,7 +154,7 @@ export default function WordsForm(props: WordsFormProps) {
     setEditWord({...editWord, forms: [...newForms]});
   }
 
-  const handleSubmitForm = async function(prevState: FormData, data: FormData) {
+  const handleSubmitForm = async function(prevState: FormState, data: FormData): Promise<FormState> {
     let insertData = {...editWord};
     insertData.project_id = currentProject._id;
     await action(insertData);
@@ -162,6 +162,7 @@ export default function WordsForm(props: WordsFormProps) {
     setTimeout(() => {
       setSaved(false);
     }, 2000);
+    return prevState;
   }
 
   const setFormValue = function(idx: number, field: string, value: string) {
@@ -177,23 +178,23 @@ export default function WordsForm(props: WordsFormProps) {
     setEditWord({...editWord, forms: [...changedForms]});
   };
 
-  const setTimeFormValue = function(timeIdx: number, idx: number, field: string, value: string) {
+  const setTimeFormValue = function(timeIdx: number, idx: number, field: keyof VerbFormInterface, value: string) {
     let changedTimes = [...editWord.verb_times];
     changedTimes[timeIdx].forms = changedTimes[timeIdx].forms.map((form, formIdx) => {
       if (formIdx !== idx) {
         return {...form};
       } else {
         let changedForm = {...form};
-        changedForm[field as keyof WordFormInterface] = value;
+        changedForm[field] = value;
         return changedForm;
       }
     });
     setEditWord({...editWord, verb_times: [...changedTimes]});
   }
 
-  const setWordValue = function(field: string, value: string) {
+  const setWordValue = function(field: 'word' | 'transcription' | 'translation' | 'notes', value: string) {
     let wordData = {...editWord};
-    wordData[field as keyof WordInterface] = value;
+    wordData[field] = value;
     setEditWord({...wordData});
   }
 
@@ -249,7 +250,7 @@ export default function WordsForm(props: WordsFormProps) {
     });
   }
 
-  const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, new FormData());
+  const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, {});
 
   return (
     <div className="word-form">

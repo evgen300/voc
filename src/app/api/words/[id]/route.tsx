@@ -1,6 +1,5 @@
 "use server"
 
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest } from 'next/server';
 
 import dbConnect from "@/lib/mongodb";

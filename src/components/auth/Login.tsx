@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from "react";
-//import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { useAuthContext } from "@/context/modules/AuthContext";
 
 export default function Login() {
@@ -10,6 +10,8 @@ export default function Login() {
   //const { t } = useTranslation();
   const [ mode, setMode ] = useState("login");
   const [ error, setError ] = useState("");
+
+  const { t } = useTranslation();
 
   const handleSubmitForm = async function (formData: any) {
     setError("");
@@ -54,7 +56,7 @@ export default function Login() {
           <div className="form-fields">
             <div className="form-row">
               <div className="form-field">
-                <label>email</label>
+                <label>{ t('email') }</label>
               </div>
               <div className="form-field">
                 <input type="text" name="email" />
@@ -62,7 +64,7 @@ export default function Login() {
             </div>
             <div className="form-row">
               <div className="form-field">
-                <label>password</label>
+                <label>{ t('password') }</label>
               </div>
               <div className="form-field">
                 <input name="password" type="password" />
@@ -72,7 +74,7 @@ export default function Login() {
               <div className="form-field">
               </div>
               <div className="form-field">
-                <button className="button -primary" type="submit">login</button>
+                <button className="button -primary" type="submit">{ t('login') }</button>
               </div>
             </div>
           </div>
@@ -80,7 +82,7 @@ export default function Login() {
           <div className="form-fields">
             <div className="form-row">
               <div className="form-field">
-                <label>name</label>
+                <label>{ t('name') }</label>
               </div>
               <div className="form-field">
                 <input type="text" name="name" />
@@ -88,7 +90,7 @@ export default function Login() {
             </div>
             <div className="form-row">
               <div className="form-field">
-                <label>email</label>
+                <label>{ t('email') }</label>
               </div>
               <div className="form-field">
                 <input type="text" name="email" />
@@ -96,7 +98,7 @@ export default function Login() {
             </div>
             <div className="form-row">
               <div className="form-field">
-                <label>password</label>
+                <label>{ t('password') }</label>
               </div>
               <div className="form-field">
                 <input name="password" type="password" />
@@ -106,7 +108,7 @@ export default function Login() {
               <div className="form-field">
               </div>
               <div className="form-field">
-                <button className="button -primary" type="submit">register</button>
+                <button className="button -primary" type="submit">{ t('register') }</button>
               </div>
             </div>
           </div>
@@ -120,7 +122,7 @@ export default function Login() {
       <div className="switch-mode">
         <button onClick={() => {
           switchMode()
-        }}>{ mode === "login" ? "register_link" : "login_link" }</button>
+        }}>{ mode === "login" ? t('register_link') : t('login_link') }</button>
       </div>
     </div>
   )

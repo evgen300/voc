@@ -134,7 +134,6 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         params.type_id = fieldValue.toString();
         break;
       case 'categories':
-        console.log(fieldValue);
         if (fieldValue.includes('empty')) {
           if (fieldValue.length === 1) {
             params.categories = [];
@@ -216,6 +215,118 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
   });
 
   return {words: words, pagination: pagination};
+}
+
+const search = async function(request: GetListInterface) {
+  let params: any = {};
+  Object.keys(request).forEach(field => {
+    let fieldValue = request[field as keyof GetListInterface];
+    if (fieldValue && fieldValue.length)
+    switch (field) {
+      case 'search':
+        let searchRegex = new RegExp(request.search || "", 'i');
+        params['$or'] = [
+          {word: searchRegex},
+          {transcription: searchRegex},
+          {translation: searchRegex},
+          {notes: searchRegex},
+          {'forms.word': searchRegex},
+          {'forms.transcription': searchRegex},
+          {'forms.translation': searchRegex},
+          {'forms.notes': searchRegex},
+        ];
+        break;
+      case 'project_id':
+        params.project_id = fieldValue;
+        break;
+      case 'word':
+        let wordRegex = new RegExp(fieldValue.toString(), 'i');
+        params['$or'] = [
+          {word: wordRegex},
+          {'forms.word': wordRegex},
+          {'verb_times.word': wordRegex},
+        ];
+        break;
+      case 'transcription':
+        let transcriptionRegex = new RegExp(fieldValue.toString(), 'i');
+        params['$or'] = [
+          {transcription: transcriptionRegex},
+          {'forms.transcription': transcriptionRegex},
+        ];
+        break;
+      case 'translation':
+        let translationRegex = new RegExp(fieldValue.toString(), 'i');
+        params['$or'] = [
+          {translation: translationRegex},
+          {'forms.translation': translationRegex},
+          {'verb_times.translation': translationRegex},
+        ];
+        break;
+      case 'notes':
+        let notesRegex = new RegExp(fieldValue.toString(), 'i');
+        params['$or'] = [
+          {notes: notesRegex},
+          {'forms.notes': notesRegex},
+        ];
+        break;
+      case 'type_id':
+        params.type_id = fieldValue.toString();
+        break;
+      case 'categories':
+        if (fieldValue.includes('empty')) {
+          if (fieldValue.length === 1) {
+            params.categories = [];
+          } else {
+            params['$or'] = [ 
+              {
+                categories: {
+                  '$in': []
+                }
+              },
+              {
+                categories: {
+                  '$in': fieldValue
+                }
+              }
+            ];
+          }
+        } else {
+          params.categories = { '$in': fieldValue };
+        }
+        break;
+    }
+  });
+  let pagedData = await WordSchema.aggregate([
+    { $match: params },
+    {
+      $facet: {
+        metadata: [{ $count: 'totalCount' }],
+        data: [{ $sort: { "word": 1 } }],
+      },
+    }
+  ],
+  {
+    collation: { locale: 'en', strength: 2 } // Ignores case differences
+  });
+  let projects: Array<any> = [];
+  //let words = await WordSchema.find(params).sort("word").limit(100);
+  if (!pagedData[0] || !Array.isArray(pagedData[0].data) || pagedData[0].data.length === 0) {
+    return {words: []};
+  }
+  let words = pagedData[0].data;
+
+  for (const word of words) {
+    let project = projects.find((pr: any) => {
+      return pr._id.toString() === word.project_id;
+    });
+    if (!project) {
+      project = await Projects.getFullProjectInfo(word.project_id);
+      projects.push(project);
+    }
+    word.project = project;
+  }
+
+  return {words: words};
 }
 
 const create = async function (data: WordInterface) {
@@ -483,5 +594,6 @@ export default {
   getTranslateFromTest,
   validateFromTest,
   getTranslateToTest,
-  validateToTest
+  validateToTest,
+  search
 }

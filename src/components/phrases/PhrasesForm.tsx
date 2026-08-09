@@ -36,15 +36,16 @@ export default function PhrasesForm(props: PhrasesFormProps) {
     getCategories();
   }, [ ]);
 
-  const handleSubmitForm = async function(prevState: FormData, data: FormData) {
+  const handleSubmitForm = async function(prevState: FormState, data: FormData): Promise<FormState> {
     let insertData = {...editPhrase};
     insertData.project_id = currentProject._id;
     await action(insertData);
+    return prevState;
   }
 
-  const setPhraseValue = function(field: string, value: string) {
+  const setPhraseValue = function(field: 'phrase' | 'translation' | 'notes', value: string) {
     let phraseData = {...editPhrase};
-    phraseData[field as keyof PhraseInterface] = value;
+    phraseData[field] = value;
     setEditPhrase({...phraseData});
   }
 
@@ -65,7 +66,7 @@ export default function PhrasesForm(props: PhrasesFormProps) {
     setEditPhrase({...editPhrase});
   }
 
-  const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, new FormData());
+  const [ state, formAction, pending ] = useActionState<FormState, FormData>(handleSubmitForm, {});
 
   return (
     <div className="phrase-form">

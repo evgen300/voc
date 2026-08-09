@@ -1,12 +1,11 @@
 "use server"
 
-import type { NextApiRequest, NextApiResponse } from 'next';
 //import { getServerSession } from 'next-auth/next';
 import dbConnect from '@/lib/mongodb';
 //import { authOptions } from '@/pages/api/auth/[...nextauth]';
 import Projects from '@/models/Projects';
 
-export async function GET(req: NextApiRequest, { params }: any) {
+export async function GET(req: Request, { params }: any) {
   /*const session = await getServerSession(authOptions);
   if (!session || !session.user) {
     return new Response(JSON.stringify([]), { status: 401 });

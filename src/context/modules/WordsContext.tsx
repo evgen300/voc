@@ -19,7 +19,7 @@ export interface VerbFormInterface {
 };
 
 export interface VerbTimeInterface {
-  time: String,
+  time: string,
   forms: Array<VerbFormInterface>
 };
 

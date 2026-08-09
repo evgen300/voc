@@ -14,12 +14,8 @@ interface AuthContext {
   isManager: Boolean
 };
 
-interface SessionUser {
-  email?: string | null | undefined,
-  fullName?: string,
-  roles?: Array<string>,
-  name?: string | null | undefined,
-  image?: string | null | undefined
+type SessionUser = Session["user"] & {
+  fullName?: string
 };
 
 interface HrSession extends Session {
@@ -28,7 +24,7 @@ interface HrSession extends Session {
 
 const defaultSession: HrSession = {
   expires: "",
-  user: {}
+  user: { id: "", lang: "", roles: [] }
 };
 
 const AuthContext = createContext<AuthContext>({
@@ -44,7 +40,7 @@ const AuthContext = createContext<AuthContext>({
 export function AuthContextProvider ({ children }: any ) {
 
   const { status, data, update } = useSession();
-  const [ userSession, setUserSession ] = useState<HrSession>({expires: "", user: {}});
+  const [ userSession, setUserSession ] = useState<HrSession>({expires: "", user: { id: "", lang: "", roles: [] }});
   const [ isUser, setIsUser ] = useState(false);
   const [ isManager, setIsManager ] = useState(false);
 
@@ -52,7 +48,7 @@ export function AuthContextProvider ({ children }: any ) {
     if (data) {
       const newSession: HrSession = {
         expires: data.expires,
-        user: data && data.user ? data.user : {}
+        user: data && data.user ? data.user : { id: "", lang: "", roles: [] }
       };
       setUserSession(newSession);
       setIsUser(newSession?.user?.roles?.includes('user') || newSession?.user?.roles?.includes('manager') ? true : false);

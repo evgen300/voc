@@ -8,6 +8,7 @@ import { ProjectContextProvider } from "@/context/modules/ProjectsContext";
 import { PhraseContextProvider } from "@/context/modules/PhrasesContext";
 import { PracticeContextProvider } from "@/context/modules/PracticeContext";
 import { AuthContextProvider } from "@/context/modules/AuthContext";
+import "@/i18n/config";
 
 const MainContext = createContext({});
 
