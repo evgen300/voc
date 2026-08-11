@@ -37,7 +37,9 @@ i18n
           categories: "Categories",
           apply: "Apply",
           reset: "Reset",
-          remove_word_confirm: "Are you sure you want to remove this word?"
+          remove_word_confirm: "Are you sure you want to remove this word?",
+          register_link: "Do not have an account? Register",
+          login_link: "Already have an account? Login"
         },
       },
       ua: {
