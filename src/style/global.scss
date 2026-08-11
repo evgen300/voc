@@ -85,11 +85,40 @@ body {
         .form-row {
           padding: 10px;
           display: grid;
+          &.-small {
+            padding: 0px;
+            font-size: 10px;
+            span {
+              font-size: 14px;
+              display: inline-block;
+              margin: 0px 4px;
+              cursor: pointer;
+            }
+            i {
+              width: 12px;
+              height: 12px;
+              vertical-align: text-top;
+              margin: 0px 3px;
+              border: none;
+              &.-add-item {
+                color: #2c9250;
+              }
+              &.-remove-item {
+                color: red;
+              }
+            }
+          }
           &.-cols-6 {
             grid-template-columns: 5% 20% 5% 20% 25% 25%;
           }
           &.-cols-5 {
-            grid-template-columns: 20% 5% 20% 20% 20%;
+            grid-template-columns: 5% 20% 20% 20% 20%;
+            &.-verb-time-forms {
+              grid-template-columns: 10% 25% 25% 25% 15%;
+            }
+          }
+          &.-cols-4 {
+            grid-template-columns: 20% 20% 20% 20%;
             &.-verb-time-forms {
               grid-template-columns: 10% 25% 25% 25% 15%;
             }

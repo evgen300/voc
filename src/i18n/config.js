@@ -39,7 +39,17 @@ i18n
           reset: "Reset",
           remove_word_confirm: "Are you sure you want to remove this word?",
           register_link: "Do not have an account? Register",
-          login_link: "Already have an account? Login"
+          login_link: "Already have an account? Login",
+          category: "Category",
+          add_form: "add form",
+          add_form_below: "Add form below",
+          delete_form: "Delete form",
+          verb_times: "Verb times",
+          add_time: "add time",
+          time: "Time",
+          saved: "Saved",
+          saving: "Saving",
+          save: "Save"
         },
       },
       ua: {

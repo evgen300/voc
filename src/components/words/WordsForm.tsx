@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useActionState } from "react";
+import { useTranslation } from "react-i18next";
 import { MultiSelect, MultiSelectChangeEvent } from 'primereact/multiselect';
 import { Dropdown } from "primereact/dropdown";
 import { InputMask, InputMaskChangeEvent } from 'primereact/inputmask';
@@ -28,6 +29,7 @@ export default function WordsForm(props: WordsFormProps) {
   const { setWordAudio } = useWordContext();
   const { categories, getCategories, types, getTypes } = useDataContext();
   const { currentProject } = useProjectContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
     setEditWord(wordData);
@@ -258,31 +260,33 @@ export default function WordsForm(props: WordsFormProps) {
         <div className="form-fields">
           <div className="form-row -cols-5">
             <div className="form-field">
-              <div className="field-label">Word</div>
+              <div className="field-label">{ t('word') }</div>
             </div>
             <div className="form-field"></div>
             <div className="form-field">
-              <div className="field-label">Transcription</div>
+              <div className="field-label">{ t('transcription') }</div>
             </div>
             <div className="form-field">
-              <div className="field-label">Translation</div>
+              <div className="field-label">{ t('translation') }</div>
             </div>
             <div className="form-field">
-              <div className="field-label">Notes</div>
+              <div className="field-label">{ t('notes') }</div>
             </div>
           </div>
-          <div className="form-row -cols-5">
+          <div className="form-row -cols-4">
             <div className="form-field">
               <div className="field-value">
                 <input name="word" value={editWord.word} onChange={(e) => setWordValue('word', e.target.value)} />
               </div>
             </div>
+            { /*
             <div className="form-field">
               { editWord.audio ? (
                 <i className="fa-solid fa-play" onClick={() => playAudio(editWord.audio || "")}></i>
               ) : '' }
               <i className="fa-solid fa-arrows-rotate" onClick={() => createAudio(wordData._id || "")}></i>
             </div>
+            */ }
             <div className="form-field">
               <div className="field-value">
                 <input name="transcription" value={editWord.transcription} onChange={(e) => setWordValue('transcription', e.target.value)} />
@@ -301,85 +305,101 @@ export default function WordsForm(props: WordsFormProps) {
           </div>
           <div className="form-row -cols-2">
             <div className="form-field">
-              <div className="field-label">Type&nbsp;
+              <div className="field-label">{ t('type') }&nbsp;
                 <Dropdown value={editWord.type_id} options={types} onChange={(e: MultiSelectChangeEvent) => setTypeId(e.value)} optionLabel="name" optionValue="key" />
               </div>
             </div>
             <div className="form-field">
-              <div className="field-label">Category&nbsp;
+              <div className="field-label">{ t('category') }&nbsp;
                 <MultiSelect value={editWord.categories} options={categories} onChange={(e: MultiSelectChangeEvent) => setCategories(e.value)} optionLabel="name" optionValue="_id" />
               </div>
             </div>
           </div>
           { editWord.forms.length > 0 ? (
-            <div className="form-row -cols-6">
+            <div className="form-row -cols-5">
               <div className="form-field"></div>
               <div className="form-field">
-                <div className="field-label">Word</div>
+                <div className="field-label">{ t('word') }</div>
               </div>
               <div className="form-field"></div>
               <div className="form-field">
-                <div className="field-label">Transcription</div>
+                <div className="field-label">{ t('transcription') }</div>
               </div>
               <div className="form-field">
-                <div className="field-label">Translation</div>
+                <div className="field-label">{ t('translation') }</div>
               </div>
               <div className="form-field">
-                <div className="field-label">Notes</div>
+                <div className="field-label">{ t('notes') }</div>
               </div>
             </div>
           ) : '' }
           { editWord.forms.map((form, idx) => {
             return (
-              <div key={ idx } className="form-row -cols-6">
-                <div className="form-field">
-                  <div className="field-label">
-                    <i className="fa-solid fa-angle-up" onClick={() => moveFormUp(idx)}></i>
-                    { idx < editWord.forms.length - 1 ? 
-                    (<i className="fa-solid fa-angle-down" onClick={() => moveFormDown(idx)}></i>) : 
-                    <span className="move-word-placeholder"></span>}
+              <div key={ idx }>
+                <div className="form-row -cols-5">
+                  <div className="form-field">
+                    <div className="field-label">
+                      <i className="fa-solid fa-angle-up" onClick={() => moveFormUp(idx)}></i>
+                      { idx < editWord.forms.length - 1 ? 
+                      (<i className="fa-solid fa-angle-down" onClick={() => moveFormDown(idx)}></i>) : 
+                      <span className="move-word-placeholder"></span>}
+                    </div>
+                  </div>
+                  <div className="form-field">
+                    <div className="field-value">
+                      <input value={form.word} onChange={(e) => {
+                        setFormValue(idx, 'word', e.target.value);
+                      }} />
+                    </div>
+                  </div>
+                  { /*
+                  <div className="form-field">
+                    { form.audio ? (
+                      <i className="fa-solid fa-play" onClick={() => playAudio(form.audio || "")}></i>
+                    ) : '' }
+                    <i className="fa-solid fa-arrows-rotate" onClick={() => createAudio(wordData._id || "", idx)}></i>
+                  </div>
+                  */ }
+                  <div className="form-field">
+                    <div className="field-value">
+                      <input value={form.transcription} onChange={(e) => {
+                        setFormValue(idx, 'transcription', e.target.value);
+                      }} />
+                    </div>
+                  </div>
+                  <div className="form-field">
+                    <div className="field-value">
+                      <input value={form.translation} onChange={(e) => {
+                        setFormValue(idx, 'translation', e.target.value);
+                      }} />
+                    </div>
+                  </div>
+                  <div className="form-field">
+                    <div className="field-value">
+                      <textarea value={form.notes} rows={3} cols={30} onChange={(e) => {
+                        setFormValue(idx, 'notes', e.target.value);
+                      }}></textarea>
+                    </div>
                   </div>
                 </div>
-                <div className="form-field">
-                  <div className="field-value">
-                    <input value={form.word} onChange={(e) => {
-                      setFormValue(idx, 'word', e.target.value);
-                    }} />
+                { idx < editWord.forms.length - 1 ? (
+                  <div className="form-row -small">
+                    <div className="form-field">
+                      <div className="field-value">
+                        <span onClick={(e) => {
+                            insertForm(idx);
+                          }}>
+                          <i className="fa-solid fa-angles-down -add-item"></i>{ t('add_form_below') }
+                        </span>
+                        <span onClick={() => {
+                            deleteForm(idx);
+                          }}>
+                          <i className="fa-solid fa-trash-can -remove-item"></i>{ t('delete_form') }
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div className="form-field">
-                  { form.audio ? (
-                    <i className="fa-solid fa-play" onClick={() => playAudio(form.audio || "")}></i>
-                  ) : '' }
-                  <i className="fa-solid fa-arrows-rotate" onClick={() => createAudio(wordData._id || "", idx)}></i>
-                </div>
-                <div className="form-field">
-                  <div className="field-value">
-                    <input value={form.transcription} onChange={(e) => {
-                      setFormValue(idx, 'transcription', e.target.value);
-                    }} />
-                  </div>
-                </div>
-                <div className="form-field">
-                  <div className="field-value">
-                    <input value={form.translation} onChange={(e) => {
-                      setFormValue(idx, 'translation', e.target.value);
-                    }} />
-                  </div>
-                </div>
-                <div className="form-field">
-                  <div className="field-value">
-                    <textarea value={form.notes} rows={3} cols={30} onChange={(e) => {
-                      setFormValue(idx, 'notes', e.target.value);
-                    }}></textarea>
-                    <i className="fa fa-plus" onClick={(e) => {
-                      insertForm(idx);
-                    }}></i>
-                    <i className="fa fa-minus" onClick={() => {
-                      deleteForm(idx);
-                    }}></i>
-                  </div>
-                </div>
+                ) : '' }
               </div>
             )
           }) }
@@ -389,69 +409,83 @@ export default function WordsForm(props: WordsFormProps) {
               <div className="button -additional" onClick={() => {
                 addForm()
               }}>
-                + add
+                + { t('add_form') }
               </div>
             </div>
           </div>
           { editWord.type_id === "verb" ? (
             <>
               <div className="form-row">
-                <div className="form-field">Verb times <span className="button -additional" onClick={() => {
+                <div className="form-field">{ t('verb_times') } <span className="button -additional" onClick={() => {
                     addTime()
-                  }}>+ add</span></div>
+                  }}>+ { t('add_time') }</span></div>
               </div>
               { editWord.verb_times.map((v_time, idx) => {
                 return (
                   <div key={ idx }>
                   <div className="form-rows -cols-6">
                     <div className="form-field">
-                      <div className="field-label">Time <Dropdown value={v_time.time} options={filteredTimes(v_time.time)} optionLabel="label" optionValue="key" onChange={(e) => setTimeValue(idx, e.value)} /></div>
+                      <div className="field-label">{ t('time') } <Dropdown value={v_time.time} options={filteredTimes(v_time.time)} optionLabel="label" optionValue="key" onChange={(e) => setTimeValue(idx, e.value)} /></div>
                     </div>
                   </div>
                   { v_time.forms.map((form, formIdx) => {
-                  return (<div key={ formIdx } className="form-row -cols-5 -verb-time-forms">
-                    <div className="form-field">
-                      <div className="field-value">
-                        <Dropdown value={form.type} options={VerbForms} optionLabel="label" optionValue="key" onChange={(e) => setTimeFormType(idx, formIdx, e.value)} />
+                  return (
+                    <div key={ formIdx }>
+                      <div className="form-row -cols-5 -verb-time-forms">
+                        <div className="form-field">
+                          <div className="field-value">
+                            <Dropdown value={form.type} options={VerbForms} optionLabel="label" optionValue="key" onChange={(e) => setTimeFormType(idx, formIdx, e.value)} />
+                          </div>
+                        </div>
+                        <div className="form-field">
+                          <div className="field-value">
+                            <input value={form.word} onChange={(e) => {
+                              setTimeFormValue(idx, formIdx, 'word', e.target.value);
+                            }} />
+                          </div>
+                        </div>
+                        <div className="form-field">
+                          <div className="field-value">
+                            <input value={form.transcription} onChange={(e) => {
+                              setTimeFormValue(idx, formIdx, 'transcription', e.target.value);
+                            }} />
+                          </div>
+                        </div>
+                        <div className="form-field">
+                          <div className="field-value">
+                            <input value={form.translation} onChange={(e) => {
+                              setTimeFormValue(idx, formIdx, 'translation', e.target.value);
+                            }} />
+                          </div>
+                        </div>
+                        <div className="form-field">
+                          <div className="field-value">
+                            <textarea value={form.notes} rows={3} cols={7} onChange={(e) => {
+                              setTimeFormValue(idx, formIdx, 'notes', e.target.value);
+                            }}></textarea>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="form-row -small">
+                        <div className="form-field">
+                          <div className="field-value">
+                            <span onClick={(e) => {
+                                insertTimeForm(idx, formIdx);
+                              }}>
+                              <i className="fa-solid fa-angles-down -add-item"></i>{ t('add_form_below') }
+                            </span>
+                            <span onClick={() => {
+                                deleteTimeForm(idx, formIdx);
+                              }}>
+                              <i className="fa-solid fa-trash-can -remove-item"></i>{ t('delete_form') }
+                            </span>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div className="form-field">
-                      <div className="field-value">
-                        <input value={form.word} onChange={(e) => {
-                          setTimeFormValue(idx, formIdx, 'word', e.target.value);
-                        }} />
-                      </div>
-                    </div>
-                    <div className="form-field">
-                      <div className="field-value">
-                        <input value={form.transcription} onChange={(e) => {
-                          setTimeFormValue(idx, formIdx, 'transcription', e.target.value);
-                        }} />
-                      </div>
-                    </div>
-                    <div className="form-field">
-                      <div className="field-value">
-                        <input value={form.translation} onChange={(e) => {
-                          setTimeFormValue(idx, formIdx, 'translation', e.target.value);
-                        }} />
-                      </div>
-                    </div>
-                    <div className="form-field">
-                      <div className="field-value">
-                        <textarea value={form.notes} rows={3} cols={7} onChange={(e) => {
-                          setTimeFormValue(idx, formIdx, 'notes', e.target.value);
-                        }}></textarea>
-                        <i className="fa fa-plus" onClick={(e) => {
-                          insertTimeForm(idx, formIdx);
-                        }}></i>
-                        <i className="fa fa-minus" onClick={() => {
-                          deleteTimeForm(idx, formIdx);
-                        }}></i>
-                      </div>
-                    </div>
-                  </div>)
+                  )
                   }) }
-                  </div>
+                </div>
                 )
               }) }
             </>
@@ -464,10 +498,10 @@ export default function WordsForm(props: WordsFormProps) {
             <div className="form-field"></div>
             <div className="form-field">
               { saved ? (
-                <span className="button -additional">Saved</span>
+                <span className="button -additional">{ t('saved') }</span>
               ) : (
                 <button type="submit" className="button -primary" disabled={ pending }>
-                  { pending ? 'Saving' : 'Save' }
+                  { pending ? t('saving') : t('save') }
                 </button>
               )}
             </div>
