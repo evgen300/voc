@@ -3,6 +3,7 @@
 import React, { useEffect } from "react";
 import { useCookies } from 'next-client-cookies';
 import { useRouter, usePathname } from "next/navigation";
+import Link from "next/link";
 
 import { useProjectContext } from "@/context/modules/ProjectsContext";
 
@@ -25,6 +26,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="projects-list">
+      <Link href={"/projects/create"} className="button -primary">Add</Link>
       { projects.map((project, idx) => {
         return (
           <div key={idx} className="project" onClick={() => {

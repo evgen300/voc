@@ -21,7 +21,23 @@ i18n
       en: {
         translation: {
           email: "Email",
-          password: "Password"
+          password: "Password",
+          projects: "Projects",
+          words: "Words",
+          phrases: "Phrases",
+          practice: "Practice",
+          words_list: "Words list",
+          add: "Add",
+          filter: "Filter",
+          word: "Word",
+          transcription: "Transcription",
+          translation: "Translation",
+          notes: "Notes",
+          type: "Type",
+          categories: "Categories",
+          apply: "Apply",
+          reset: "Reset",
+          remove_word_confirm: "Are you sure you want to remove this word?"
         },
       },
       ua: {

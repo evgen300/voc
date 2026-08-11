@@ -48,8 +48,13 @@ const getFullProjectInfo = async function (_id: string) {
   return fullProj;
 }
 
+const create = async function (data: any) {
+  return await ProjectsSchema.create(data);
+}
+
 export default {
   getList,
   getById,
-  getFullProjectInfo
+  getFullProjectInfo,
+  create
 }

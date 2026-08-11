@@ -78,7 +78,6 @@ const VerbTimesOrder = [
 const getList = async function(request: GetListInterface, page: number = 1, onpage: number = 30) {
   //await WordSchema.updateMany({type_id: "69dc93518fabedb3cefb8e6d", project_id: "69c6d5b82820de2358f30d89"}, {type_id: "adverb"});
   let params: any = {};
-  let orParams = [];
   const project = await Projects.getFullProjectInfo(request.project_id);
   Object.keys(request).forEach(field => {
     let fieldValue = request[field as keyof GetListInterface];
@@ -95,6 +94,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
           {'forms.transcription': searchRegex},
           {'forms.translation': searchRegex},
           {'forms.notes': searchRegex},
+          {'verb_times.forms.word': searchRegex},
         ];
         break;
       case 'project_id':
@@ -105,7 +105,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         params['$or'] = [
           {word: wordRegex},
           {'forms.word': wordRegex},
-          {'verb_times.word': wordRegex},
+          {'verb_times.forms.word': wordRegex},
         ];
         break;
       case 'transcription':
@@ -120,7 +120,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         params['$or'] = [
           {translation: translationRegex},
           {'forms.translation': translationRegex},
-          {'verb_times.translation': translationRegex},
+          {'verb_times.forms.translation': translationRegex},
         ];
         break;
       case 'notes':
@@ -128,6 +128,7 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
         params['$or'] = [
           {notes: notesRegex},
           {'forms.notes': notesRegex},
+          {'verb_times.forms.notes': notesRegex},
         ];
         break;
       case 'type_id':
@@ -234,6 +235,7 @@ const search = async function(request: GetListInterface) {
           {'forms.transcription': searchRegex},
           {'forms.translation': searchRegex},
           {'forms.notes': searchRegex},
+          {'verb_times.forms.word': searchRegex},
         ];
         break;
       case 'project_id':
@@ -244,7 +246,7 @@ const search = async function(request: GetListInterface) {
         params['$or'] = [
           {word: wordRegex},
           {'forms.word': wordRegex},
-          {'verb_times.word': wordRegex},
+          {'verb_times.forms.word': wordRegex},
         ];
         break;
       case 'transcription':
@@ -259,7 +261,7 @@ const search = async function(request: GetListInterface) {
         params['$or'] = [
           {translation: translationRegex},
           {'forms.translation': translationRegex},
-          {'verb_times.translation': translationRegex},
+          {'verb_times.forms.translation': translationRegex},
         ];
         break;
       case 'notes':
@@ -267,6 +269,7 @@ const search = async function(request: GetListInterface) {
         params['$or'] = [
           {notes: notesRegex},
           {'forms.notes': notesRegex},
+          {'verb_times.forms.notes': notesRegex},
         ];
         break;
       case 'type_id':

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useTranslation } from "react-i18next";
 
 import { confirmDialog, ConfirmDialog } from "primereact/confirmdialog";
 import { Dropdown, DropdownChangeEvent } from "primereact/dropdown";
@@ -36,6 +37,7 @@ export default function WordsList() {
   const { getList, deleteWord, wordsFilters, setWordsFilters, verbTimeLabel, verbTimeFormLabel } = useWordContext();
   const { currentProject } = useProjectContext();
   const { getTypes, types, getCategories, categories } = useDataContext();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (currentProject && currentProject._id) {
@@ -94,7 +96,7 @@ export default function WordsList() {
   const confirmRemove = async function(word: WordInterface) {
     confirmDialog({
       message: word.word,
-      header: 'Remove word?',
+      header: t('remove_word_confirm'),
       className: 'confirm-dialog',
       acceptClassName: 'button -primary',
       rejectClassName: 'button',
@@ -135,40 +137,40 @@ export default function WordsList() {
   return (
     <div>
       <ConfirmDialog />
-      <h1 className="section-title">Words list</h1>
+      <h1 className="section-title">{ t('words_list') }</h1>
       <Link className="button -primary" href={"/words/create"}>
-        <i className="fa-solid fa-plus"></i>&nbsp;Add
+        <i className="fa-solid fa-plus"></i>&nbsp;{ t('add') }
       </Link>
       <div className="items-list -words-filter">
         <div className="item-row -rows-7">
           <div className="item-field">
-            Filter:<br /><input name="filter" value={ wordsFilters.search || "" } onChange={(e) => setWordsFilters({...wordsFilters, search: e.target.value})} />
+            { t('filter') }:<br /><input name="filter" value={ wordsFilters.search || "" } onChange={(e) => setWordsFilters({...wordsFilters, search: e.target.value})} />
           </div>
           <div className="item-field">
-            Word:<br/><input name="word" value={ wordsFilters.word || "" } onChange={(e) => setWordsFilters({...wordsFilters, word: e.target.value})} />
+            { t('word') }:<br/><input name="word" value={ wordsFilters.word || "" } onChange={(e) => setWordsFilters({...wordsFilters, word: e.target.value})} />
           </div>
           <div className="item-field">
-            Transcription:<br/><input name="transcription" value={ wordsFilters.transcription || "" } onChange={(e) => setWordsFilters({...wordsFilters, transcription: e.target.value})} />
+            { t('transcription') }:<br/><input name="transcription" value={ wordsFilters.transcription || "" } onChange={(e) => setWordsFilters({...wordsFilters, transcription: e.target.value})} />
           </div>
           <div className="item-field">
-            Translation:<br/><input name="translation" value={ wordsFilters.translation || "" } onChange={(e) => setWordsFilters({...wordsFilters, translation: e.target.value})} />
+            { t('translation') }:<br/><input name="translation" value={ wordsFilters.translation || "" } onChange={(e) => setWordsFilters({...wordsFilters, translation: e.target.value})} />
           </div>
           <div className="item-field">
-            Notes:<br /><input name="notes" value={ wordsFilters.notes || "" } onChange={(e) => setWordsFilters({...wordsFilters, notes: e.target.value})} />
+            { t('notes') }:<br /><input name="notes" value={ wordsFilters.notes || "" } onChange={(e) => setWordsFilters({...wordsFilters, notes: e.target.value})} />
           </div>
           <div className="item-field">
-            Type:<br /><Dropdown value={wordsFilters.type_id} options={types} onChange={(e: DropdownChangeEvent) => setWordsFilters({...wordsFilters, type_id: e.value})} optionLabel="name" optionValue="key" />
+            { t('type') }:<br /><Dropdown value={wordsFilters.type_id} options={types} onChange={(e: DropdownChangeEvent) => setWordsFilters({...wordsFilters, type_id: e.value})} optionLabel="name" optionValue="key" />
           </div>
           <div className="item-field">
-            Categories:<br /><MultiSelect value={wordsFilters.categories} options={categoriesFilter} onChange={(e: MultiSelectChangeEvent) => setWordsFilters({...wordsFilters, categories: e.value})} optionLabel="name" optionValue="_id" />
+            { t('categories') }:<br /><MultiSelect value={wordsFilters.categories} options={categoriesFilter} onChange={(e: MultiSelectChangeEvent) => setWordsFilters({...wordsFilters, categories: e.value})} optionLabel="name" optionValue="_id" />
           </div>
         </div>
         <div className="item-row -rows-5">
           <div className="item-field">
-            <div className="button -primary" onClick={() => applyFilters()}>Apply</div>
+            <div className="button -primary" onClick={() => applyFilters()}>{ t('apply') }</div>
           </div>
           <div className="item-field">
-            <div className="button" onClick={() => resetFIlters()}>Reset</div>
+            <div className="button" onClick={() => resetFIlters()}>{ t('reset') }</div>
           </div>
         </div>
       </div>
@@ -176,28 +178,28 @@ export default function WordsList() {
         <div className="item-row -rows-5">
           <div className="item-field">
             <label>
-              Word: <input type="checkbox" checked={printConfig.word} onChange={(e) => {
+              { t('word') }: <input type="checkbox" checked={printConfig.word} onChange={(e) => {
                 setPrintConfig({...printConfig, word: e.target.checked});
               }} />
             </label>
           </div>
           <div className="item-field">
             <label>
-              Transcription: <input type="checkbox" checked={printConfig.transcription} onChange={(e) => {
+              { t('transcription') }: <input type="checkbox" checked={printConfig.transcription} onChange={(e) => {
                 setPrintConfig({...printConfig, transcription: e.target.checked});
               }} />
             </label>
           </div>
           <div className="item-field">
             <label>
-              Translation: <input type="checkbox" checked={printConfig.translation} onChange={(e) => {
+              { t('translation') }: <input type="checkbox" checked={printConfig.translation} onChange={(e) => {
                 setPrintConfig({...printConfig, translation: e.target.checked});
               }} />
             </label>
           </div>
           <div className="item-field">
             <label>
-              Notes: <input type="checkbox" checked={printConfig.notes} onChange={(e) => {
+              { t('notes') }: <input type="checkbox" checked={printConfig.notes} onChange={(e) => {
                 setPrintConfig({...printConfig, notes: e.target.checked});
               }} />
             </label>
@@ -207,10 +209,10 @@ export default function WordsList() {
       <div className="items-list -words-list print-section">
         <div className="items-header item-row -rows-6 -no-print">
           <div></div>
-          <div className="item-header">Word</div>
-          <div className="item-header">Transcription</div>
-          <div className="item-header">Translation</div>
-          <div className="item-header">Notes</div>
+          <div className="item-header">{ t('word') }</div>
+          <div className="item-header">{ t('transcription') }</div>
+          <div className="item-header">{ t('translation') }</div>
+          <div className="item-header">{ t('notes') }</div>
         </div>
         { words.map((word, idx) => {
           return (

@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState } from "react";
+import { useCookies } from "next-client-cookies";
 
 import { LanguageInterface } from "@/context/modules/DataContext";
 
@@ -15,17 +16,23 @@ interface ProjectContextInterface {
   projects: Array<ProjectInterface>,
   getList: Function,
   currentProject: ProjectInterface,
-  loadProject: Function
+  loadProject: Function,
+  createProject: Function,
+  setProjectLocal: Function
 };
 
 const ProjectContext = createContext<ProjectContextInterface>({
   projects: [],
   getList: () => {},
   currentProject: { },
-  loadProject: () => {}
+  loadProject: () => {},
+  createProject: () => {},
+  setProjectLocal: () => {}
 });
 
 export function ProjectContextProvider({ children }: any) {
+
+  const cookies = useCookies();
 
   let defaultProject: ProjectInterface = {};
 
@@ -46,12 +53,30 @@ export function ProjectContextProvider({ children }: any) {
     return project;
   }
 
+  const createProject = async function(data: ProjectInterface) {
+    let response = await fetch(`/api/projects`, {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: {
+        "Content-Type" : "application/json"
+      }
+    });
+    let project = await response.json();
+    return project;
+  }
+
+  const setProjectLocal = async function (project_id: string) {
+    cookies.set('project_id', project_id);
+  }
+
   return (
     <ProjectContext.Provider value={{
       projects: projects,
       getList: getList,
       currentProject,
-      loadProject
+      loadProject,
+      createProject,
+      setProjectLocal
     }}>
       { children }
     </ProjectContext.Provider>

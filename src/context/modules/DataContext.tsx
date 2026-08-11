@@ -16,26 +16,38 @@ export interface LanguageInterface {
 interface DataContextInterface {
   categories: Array<DataInterface>,
   types: Array<DataInterface>,
+  languages: Array<LanguageInterface>,
   getCategories: Function,
-  getTypes: Function
+  getTypes: Function,
+  getLanguages: Function
 };
 
 const DataContext = createContext<DataContextInterface>({
   categories: [],
   types: [],
+  languages: [],
   getCategories: () => {},
-  getTypes: () => {}
+  getTypes: () => {},
+  getLanguages: () => {}
 });
 
 export function DataContextProvider({ children }: any) {
 
   const [ categories, setCategories ] = useState<Array<DataInterface>>([]);
   const [ types, setTypes ] = useState<Array<DataInterface>>([]);
+  const [ languages, setLanguages ] = useState<Array<LanguageInterface>>([]);
   
   const getCategories = async function() {
     const response = await fetch(`/api/categories`);
     const data = await response.json();
     setCategories(data);
+    return data;
+  }
+
+  const getLanguages = async function() {
+    const response = await fetch(`/api/languages`);
+    const data = await response.json();
+    setLanguages(data);
     return data;
   }
 
@@ -50,8 +62,10 @@ export function DataContextProvider({ children }: any) {
     <DataContext.Provider value={{
       categories: categories,
       types: types,
+      languages: languages,
       getCategories: getCategories,
-      getTypes: getTypes
+      getTypes: getTypes,
+      getLanguages: getLanguages
     }}>
       { children }
     </DataContext.Provider>

@@ -3,27 +3,25 @@
 import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export default function LeftMenuPage() {
 
   const router = useRouter();
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   const links: any = {
     'projects': {
-      title: 'Projects',
       icon: 'fa-solid fa-shield'
     },
     'words': {
-      title: 'Words',
       icon: 'fa-solid fa-font'
     },
     'phrases': {
-      title: 'Phrases',
       icon: 'fa-solid fa-comment'
     },
     'practice': {
-      title: 'Practice',
       icon: 'fa-solid fa-dumbbell'
     }
   };
@@ -47,7 +45,7 @@ export default function LeftMenuPage() {
             <div key={linkIndex} className={"menu-item " + (pathname.indexOf(link) === 1 ? " -selected" : "")}>
               <Link href={"/" + link}>
               <i className={links[link].icon}></i>&nbsp;
-                { links[link].title }
+                { t(link) }
               </Link>
             </div>
           )

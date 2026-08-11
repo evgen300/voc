@@ -53,7 +53,7 @@ export const authOptions: NextAuthOptions = {
     // How often the session should be updated in seconds.
     // If a user is active, their session expiry will be extended by this amount.
     // Set to 0 to disable session rolling.
-    //updateAge: 1 * 60, // 30 min
+    updateAge: 30 * 60, // 30 min
   },
   jwt: {
     maxAge: 60 * 60 * 24 * 30
@@ -105,15 +105,25 @@ export const authOptions: NextAuthOptions = {
         token.name = session.name;
       }
       if (token.uid) {
-        const userDb = await UserSchema.findOne({ _id: token.uid });
-        token.lang = userDb.lang;
+        try {
+          await dbConnect();
+          const userDb = await UserSchema.findOne({ _id: token.uid });
+          if (userDb) {
+            token.lang = userDb.lang;
+          }
+        } catch (error) {
+          console.log("jwt callback: failed to refresh user data", error);
+        }
       }
-      return {
-        ...token,
-        accessToken: account?.access_token,
-        refreshToken: account?.refresh_token,
-        accessTokenExpires: Date.now() + (account?.expires_at || 1) * 1000
-      };
+      if (account) {
+        return {
+          ...token,
+          accessToken: account.access_token,
+          refreshToken: account.refresh_token,
+          accessTokenExpires: Date.now() + (account.expires_at || 1) * 1000
+        };
+      }
+      return token;
     },
     async session({ session, token, trigger }) {
       session.user.id = token.sub as string;
@@ -146,8 +156,16 @@ export const getSession = async function (req: any, res: any) {
     const options = authOptions;
     let session = await getServerSession(req, res, options);
     if (session && session.user && session.user.id) {
-      let user = await UserSchema.findOne({ _id: session.user.id });
-      session.user.roles = user.roles;
+      let user = null;
+      try {
+        await dbConnect();
+        user = await UserSchema.findOne({ _id: session.user.id });
+      } catch (e) {
+        console.log("getSession: failed to refresh user roles", e);
+      }
+      if (user) {
+        session.user.roles = user.roles;
+      }
     }
     return session;
   } catch(e) {

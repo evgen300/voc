@@ -57,7 +57,7 @@ export default function WordsSearchResult(params: WordSearchResultParams) {
 
   if (textParts.length < 2) {
     return (
-      <>{ text }</>
+      <><span className="search-result-formatted" dangerouslySetInnerHTML={{__html: text.replace(/[\r\n]/g, '<br>')}}>{  }</span></>
     )
   }
 
