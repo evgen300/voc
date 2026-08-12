@@ -321,7 +321,6 @@ export default function WordsForm(props: WordsFormProps) {
               <div className="form-field">
                 <div className="field-label">{ t('word') }</div>
               </div>
-              <div className="form-field"></div>
               <div className="form-field">
                 <div className="field-label">{ t('transcription') }</div>
               </div>

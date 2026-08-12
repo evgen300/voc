@@ -83,11 +83,13 @@ body {
 
       .word-form {
         .form-row {
-          padding: 10px;
+          padding: 10px 0px;
           display: grid;
+          width: 90%;
           &.-small {
-            padding: 0px;
+            padding: 0px 0px 5px 0px;
             font-size: 10px;
+            border-bottom: solid 1px white;
             span {
               font-size: 14px;
               display: inline-block;
@@ -112,13 +114,14 @@ body {
             grid-template-columns: 5% 20% 5% 20% 25% 25%;
           }
           &.-cols-5 {
-            grid-template-columns: 5% 20% 20% 20% 20%;
+            grid-template-columns: 5% 20% 20% 20% calc(100% - 65%);
+            gap: 10px;
             &.-verb-time-forms {
               grid-template-columns: 10% 25% 25% 25% 15%;
             }
           }
           &.-cols-4 {
-            grid-template-columns: 20% 20% 20% 20%;
+            grid-template-columns: 20% 20% 20% 40%;
             &.-verb-time-forms {
               grid-template-columns: 10% 25% 25% 25% 15%;
             }
@@ -138,6 +141,7 @@ body {
               textarea {
                 resize: none;
                 vertical-align: middle;
+                width: 90%;
               }
             }
           }
@@ -282,6 +286,7 @@ body {
       &.-words-filter {
         .-rows-7 {
           grid-template-columns: 14% 14% 14% 14% 14% 14% 14%;
+          gap: 10px;
         }
       }
       &.-phrases-list {
