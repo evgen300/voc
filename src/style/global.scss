@@ -285,8 +285,13 @@ body {
       }
       &.-words-filter {
         .-rows-7 {
-          grid-template-columns: 14% 14% 14% 14% 14% 14% 14%;
+          grid-template-columns: 14% 14% 14% 14% 14% 10% 18%;
           gap: 10px;
+          input {
+            width: 90%;
+            vertical-align: sub;
+            border: 1px solid white;
+          }
         }
       }
       &.-phrases-list {
