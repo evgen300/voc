@@ -4,12 +4,14 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useTranslation } from "react-i18next";
+import { useAuthContext } from "@/context/modules/AuthContext";
 
 export default function LeftMenuPage() {
 
   const router = useRouter();
   const pathname = usePathname();
   const { t } = useTranslation();
+  const { status, signOut } = useAuthContext();
 
   const links: any = {
     'projects': {
@@ -33,8 +35,8 @@ export default function LeftMenuPage() {
   } , [ pathname ]);
 
   const handleSignOut = async function () {
-    //await signOut({ redirect: false });
-    //router.push('/');
+    await signOut({ redirect: false });
+    router.push('/');
   }
 
   return (
@@ -50,6 +52,12 @@ export default function LeftMenuPage() {
             </div>
           )
         }) }
+        { status === "authenticated" && (
+          <div className="menu-item -logout" onClick={handleSignOut}>
+            <i className="fa-solid fa-right-from-bracket"></i>&nbsp;
+            { t('logout') }
+          </div>
+        ) }
       </div>
     </div>
   )

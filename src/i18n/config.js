@@ -49,7 +49,8 @@ i18n
           time: "Time",
           saved: "Saved",
           saving: "Saving",
-          save: "Save"
+          save: "Save",
+          logout: "Logout"
         },
       },
       ua: {
