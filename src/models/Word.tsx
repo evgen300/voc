@@ -218,6 +218,19 @@ const getList = async function(request: GetListInterface, page: number = 1, onpa
   return {words: words, pagination: pagination};
 }
 
+const SEARCH_INDEX = 'words_fuzzy';
+const FUZZY_SEARCH_PATHS = [
+  'word',
+  'transcription',
+  'translation',
+  'notes',
+  'forms.word',
+  'forms.transcription',
+  'forms.translation',
+  'forms.notes',
+  'verb_times.forms.word',
+];
+
 const search = async function(request: GetListInterface) {
   let params: any = {};
   Object.keys(request).forEach(field => {
@@ -225,18 +238,7 @@ const search = async function(request: GetListInterface) {
     if (fieldValue && fieldValue.length)
     switch (field) {
       case 'search':
-        let searchRegex = new RegExp(request.search || "", 'i');
-        params['$or'] = [
-          {word: searchRegex},
-          {transcription: searchRegex},
-          {translation: searchRegex},
-          {notes: searchRegex},
-          {'forms.word': searchRegex},
-          {'forms.transcription': searchRegex},
-          {'forms.translation': searchRegex},
-          {'forms.notes': searchRegex},
-          {'verb_times.forms.word': searchRegex},
-        ];
+        // handled below via a fuzzy $search stage
         break;
       case 'project_id':
         params.project_id = fieldValue;
@@ -299,18 +301,42 @@ const search = async function(request: GetListInterface) {
         break;
     }
   });
-  let pagedData = await WordSchema.aggregate([
-    { $match: params },
-    {
-      $facet: {
-        metadata: [{ $count: 'totalCount' }],
-        data: [{ $sort: { "word": 1 } }],
-      },
+  const useFuzzySearch = !!(request.search && request.search.length > 0);
+  let pipeline: any[] = [];
+
+  if (useFuzzySearch) {
+    pipeline.push({
+      $search: {
+        index: SEARCH_INDEX,
+        compound: {
+          should: FUZZY_SEARCH_PATHS.map(path => ({
+            text: {
+              query: request.search,
+              path,
+              fuzzy: { maxEdits: 2, prefixLength: 0 }
+            }
+          })),
+          minimumShouldMatch: 1
+        }
+      }
+    });
+    pipeline.push({ $addFields: { score: { $meta: 'searchScore' } } });
+  }
+
+  pipeline.push({ $match: params });
+  pipeline.push({
+    $facet: {
+      metadata: [{ $count: 'totalCount' }],
+      data: [{ $sort: useFuzzySearch ? { score: -1 } : { word: 1 } }],
     }
-  ],
-  {
-    collation: { locale: 'en', strength: 2 } // Ignores case differences
   });
+
+  // Atlas Search's $search stage doesn't support a non-simple collation,
+  // so only apply it when falling back to plain $match filtering.
+  let pagedData = await WordSchema.aggregate(
+    pipeline,
+    useFuzzySearch ? {} : { collation: { locale: 'en', strength: 2 } } // Ignores case differences
+  );
   let projects: Array<any> = [];
   //let words = await WordSchema.find(params).sort("word").limit(100);
   if (!pagedData[0] || !Array.isArray(pagedData[0].data) || pagedData[0].data.length === 0) {
