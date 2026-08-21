@@ -381,15 +381,16 @@ export default function WordsForm(props: WordsFormProps) {
                     </div>
                   </div>
                 </div>
-                { idx < editWord.forms.length - 1 ? (
                   <div className="form-row -small">
                     <div className="form-field">
                       <div className="field-value">
+                      { idx < editWord.forms.length - 1 ? (
                         <span onClick={(e) => {
                             insertForm(idx);
                           }}>
                           <i className="fa-solid fa-angles-down -add-item"></i>{ t('add_form_below') }
                         </span>
+                      ) : '' }
                         <span onClick={() => {
                             deleteForm(idx);
                           }}>
@@ -398,7 +399,6 @@ export default function WordsForm(props: WordsFormProps) {
                       </div>
                     </div>
                   </div>
-                ) : '' }
               </div>
             )
           }) }
