@@ -691,6 +691,26 @@ div.items-list {
     background-image: url(/icons/en.png);
   }
 }
+.manual-page {
+  max-width: 700px;
+  padding: 25px;
+  h1 {
+    margin-bottom: 10px;
+  }
+  section {
+    margin-top: 25px;
+    h2 {
+      margin-bottom: 8px;
+    }
+    p {
+      line-height: 1.5;
+    }
+    .-note {
+      font-style: italic;
+      opacity: 0.8;
+    }
+  }
+}
 
 .form-fields {
   .field-value {
