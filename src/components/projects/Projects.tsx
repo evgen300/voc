@@ -26,7 +26,11 @@ export default function ProjectsPage() {
 
   return (
     <div className="projects-list">
-      <Link href={"/projects/create"} className="button -primary">Add</Link>
+      <div className="add-project">
+        <Link href={"/projects/create"} className="button -primary">
+          <i className="fa-solid fa-plus"></i>Add project
+        </Link>
+      </div>
       { projects.map((project, idx) => {
         return (
           <div key={idx} className="project" onClick={() => {

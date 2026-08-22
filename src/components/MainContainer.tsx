@@ -7,6 +7,7 @@ import { useAuthContext } from "@/context/modules/AuthContext";
 import ProjectsPage from "@/components/projects/Projects";
 import LoaderMain from "@/components/LoaderMain";
 import Login from "@/components/auth/Login";
+import { usePathname } from "next/navigation";
 
 interface MainPageProps {
   project_id: string
@@ -20,6 +21,8 @@ export default function MainContainer({ project_id, children = (<div></div>) }: 
   const { status } = useAuthContext();
   const { loadProject } = useProjectContext();
 
+  const pathname = usePathname();
+
   useEffect(() => {
     if (project_id) {
       loadProject(project_id);
@@ -32,7 +35,7 @@ export default function MainContainer({ project_id, children = (<div></div>) }: 
     )
   }
 
-  if (status === "unauthenticated") {
+  if (status === "unauthenticated" && pathname !== "/manual") {
     return (
       <Login></Login>
     )

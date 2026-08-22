@@ -64,10 +64,14 @@ body {
       }
 
       .projects-list {
+        .add-project {
+          margin: 10px 0px;
+        }
         .project {
           border: 2px solid green;
           border-radius: 8px;
           padding: 5px;
+          margin: 2px 3px;
           width: auto;
           display: inline-block;
           cursor: pointer;
