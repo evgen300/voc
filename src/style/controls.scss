@@ -6,22 +6,49 @@
   display: inline-block;
   margin: 0px 2px;
   font-size: 20px;
+  transition: background-color .15s ease, border-color .15s ease, color .15s ease;
   &.-primary {
-    background-color: #289c38 !important;
+    background-color: #2ea043 !important;
     color: white;
     i {
-      background-color: #289c38;
+      background-color: #2ea043;
+    }
+    &:hover:not(:disabled) {
+      background-color: #3ebd54 !important;
     }
     &:disabled {
       background-color: #1c3826 !important;
+      cursor: default;
       i {
         background-color: #1c3826;
       }
     }
   }
   &.-additional {
-    border-color: #2c9250;
-    color: #2c9250 !important;
+    border-color: #2ea043;
+    color: #2ea043 !important;
+    &:hover {
+      background-color: rgba(46, 160, 67, .12);
+    }
+  }
+}
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, .2);
+  cursor: pointer;
+  transition: border-color .15s ease, color .15s ease;
+  &:hover {
+    border-color: #2ea043;
+    color: #2ea043;
+  }
+  &.-danger:hover {
+    border-color: #e04b4b;
+    color: #e04b4b;
   }
 }
 .p-dialog-footer {

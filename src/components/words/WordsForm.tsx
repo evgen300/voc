@@ -258,11 +258,11 @@ export default function WordsForm(props: WordsFormProps) {
     <div className="word-form">
       <form action={formAction}>
         <div className="form-fields">
-          <div className="form-row -cols-5">
+          <div className="word-form-section">
+          <div className="form-row -cols-4">
             <div className="form-field">
               <div className="field-label">{ t('word') }</div>
             </div>
-            <div className="form-field"></div>
             <div className="form-field">
               <div className="field-label">{ t('transcription') }</div>
             </div>
@@ -315,6 +315,8 @@ export default function WordsForm(props: WordsFormProps) {
               </div>
             </div>
           </div>
+          </div>
+          <div className="word-form-section">
           { editWord.forms.length > 0 ? (
             <div className="form-row -cols-5">
               <div className="form-field"></div>
@@ -334,13 +336,13 @@ export default function WordsForm(props: WordsFormProps) {
           ) : '' }
           { editWord.forms.map((form, idx) => {
             return (
-              <div key={ idx }>
+              <div key={ idx } className="word-forms-container">
                 <div className="form-row -cols-5">
                   <div className="form-field">
                     <div className="field-label">
-                      <i className="fa-solid fa-angle-up" onClick={() => moveFormUp(idx)}></i>
+                      <i className="fa-solid fa-angle-up icon-button" onClick={() => moveFormUp(idx)}></i>
                       { idx < editWord.forms.length - 1 ? 
-                      (<i className="fa-solid fa-angle-down" onClick={() => moveFormDown(idx)}></i>) : 
+                      (<i className="fa-solid fa-angle-down icon-button" onClick={() => moveFormDown(idx)}></i>) : 
                       <span className="move-word-placeholder"></span>}
                     </div>
                   </div>
@@ -385,13 +387,13 @@ export default function WordsForm(props: WordsFormProps) {
                     <div className="form-field">
                       <div className="field-value">
                       { idx < editWord.forms.length - 1 ? (
-                        <span onClick={(e) => {
+                        <span className="form-pill -add" onClick={(e) => {
                             insertForm(idx);
                           }}>
                           <i className="fa-solid fa-angles-down -add-item"></i>{ t('add_form_below') }
                         </span>
                       ) : '' }
-                        <span onClick={() => {
+                        <span className="form-pill -remove" onClick={() => {
                             deleteForm(idx);
                           }}>
                           <i className="fa-solid fa-trash-can -remove-item"></i>{ t('delete_form') }
@@ -412,8 +414,9 @@ export default function WordsForm(props: WordsFormProps) {
               </div>
             </div>
           </div>
+          </div>
           { editWord.type_id === "verb" ? (
-            <>
+            <div className="word-form-section">
               <div className="form-row">
                 <div className="form-field">{ t('verb_times') } <span className="button -additional" onClick={() => {
                     addTime()
@@ -421,15 +424,15 @@ export default function WordsForm(props: WordsFormProps) {
               </div>
               { editWord.verb_times.map((v_time, idx) => {
                 return (
-                  <div key={ idx }>
-                  <div className="form-rows -cols-6">
+                  <div key={ idx } className="word-forms-container">
+                  <div className="form-row -cols-6">
                     <div className="form-field">
                       <div className="field-label">{ t('time') } <Dropdown value={v_time.time} options={filteredTimes(v_time.time)} optionLabel="label" optionValue="key" onChange={(e) => setTimeValue(idx, e.value)} /></div>
                     </div>
                   </div>
                   { v_time.forms.map((form, formIdx) => {
                   return (
-                    <div key={ formIdx }>
+                    <div key={ formIdx } className="word-forms-container">
                       <div className="form-row -cols-5 -verb-time-forms">
                         <div className="form-field">
                           <div className="field-value">
@@ -468,12 +471,12 @@ export default function WordsForm(props: WordsFormProps) {
                       <div className="form-row -small">
                         <div className="form-field">
                           <div className="field-value">
-                            <span onClick={(e) => {
+                            <span className="form-pill -add" onClick={(e) => {
                                 insertTimeForm(idx, formIdx);
                               }}>
                               <i className="fa-solid fa-angles-down -add-item"></i>{ t('add_form_below') }
                             </span>
-                            <span onClick={() => {
+                            <span className="form-pill -remove" onClick={() => {
                                 deleteTimeForm(idx, formIdx);
                               }}>
                               <i className="fa-solid fa-trash-can -remove-item"></i>{ t('delete_form') }
@@ -487,7 +490,7 @@ export default function WordsForm(props: WordsFormProps) {
                 </div>
                 )
               }) }
-            </>
+            </div>
           ) : '' }
           <div className="form-row -cols-6">
             <div className="form-field"></div>

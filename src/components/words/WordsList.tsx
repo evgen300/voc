@@ -207,8 +207,7 @@ export default function WordsList() {
         </div>
       </div>
       <div className="items-list -words-list print-section">
-        <div className="items-header item-row -rows-6 -no-print">
-          <div></div>
+        <div className="items-header item-row -rows-5 -no-print">
           <div className="item-header">{ t('word') }</div>
           <div className="item-header">{ t('transcription') }</div>
           <div className="item-header">{ t('translation') }</div>
@@ -217,12 +216,7 @@ export default function WordsList() {
         { words.map((word, idx) => {
           return (
             <div key={'word' + idx}>
-              <div key={idx} className={"item-row -rows-6 -word-row " + getPrintColsConfig()}>
-                <div className="item-field -no-print">
-                  { word.audio ? (
-                    <i className="fa-regular fa-circle-play" onClick={() => playAudio(word.audio || "")}></i>
-                  ) : '' }
-                </div>
+              <div key={idx} className={"item-row -rows-5 -word-row " + getPrintColsConfig()}>
                 <div className="item-field">
                   { getFormattedFieldText(word.word, 'word') }
                 </div>
@@ -237,11 +231,11 @@ export default function WordsList() {
                 <div className="item-field -notes">{ getFormattedFieldText(word.notes, 'notes') }</div>
                 <div className="item-action -no-print">
                   <Link href={`/words/${word._id}/edit`}>
-                    <i className="fa-solid fa-pencil"></i>
+                    <i className="fa-solid fa-pencil icon-button"></i>
                   </Link>
                   <i onClick={() => {
                     confirmRemove(word);
-                  }} className="fa-solid fa-trash"></i>
+                  }} className="fa-solid fa-trash icon-button -danger"></i>
                 </div>
               </div>
               { word.type_id === "verb" && Array.isArray(word.verb_times) && word.verb_times.length > 0 ? (
@@ -249,7 +243,7 @@ export default function WordsList() {
                   {word.verb_times.map((v_time, v_timeIdx) => {
                     return (
                       <div key={ v_timeIdx }>
-                        <div className="item-row -rows-6">
+                        <div className="item-row -rows-6 -nested-row">
                           <div className="item-field"></div>
                           <div className="item-field">
                             <b>{ verbTimeLabel(v_time.time) }</b>
@@ -257,7 +251,7 @@ export default function WordsList() {
                         </div>
                         { v_time.forms.map((v_time_form, v_time_formIdx) => {
                           return (
-                            <div className="item-row -rows-6" key={ v_time_formIdx }>
+                            <div className="item-row -rows-6 -nested-row" key={ v_time_formIdx }>
                               <div className="item-field">
                                 { verbTimeFormLabel(v_time_form.type) }
                               </div>
@@ -278,7 +272,7 @@ export default function WordsList() {
               ) : '' }
               { word.forms.map((form, formIdx) => {
                 return (
-                  <div key={formIdx} className={`item-row -rows-6 ` + getPrintColsConfig()}>
+                  <div key={formIdx} className={`item-row -rows-6 -nested-row ` + getPrintColsConfig()}>
                     <div className="item-field -no-print">
                       { form.audio ? (
                         <i className="fa-regular fa-circle-play" onClick={() => playAudio(form.audio || "")}></i>

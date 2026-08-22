@@ -10,10 +10,12 @@
   }
 }
 
-$dark-main-color: #289c38;
+$dark-main-color: #2ea043;
+$green-hover: #3ebd54;
 $highlight-color: #1c3826;
 $dark-background-color: #222627;
 $dark-header-color: #212121;
+$input-bg-color: #2a2f30;
 
 body {
   font-family: Arial, Helvetica, sans-serif;
@@ -49,6 +51,12 @@ body {
         .menu-item {
           &.-selected {
             background-color: $highlight-color;
+            &::before {
+              background-color: $dark-main-color;
+            }
+            i {
+              color: $dark-main-color;
+            }
           }
         }
       }
@@ -85,32 +93,66 @@ body {
         }
       }
 
+      .word-form-section {
+        background-color: rgba(255, 255, 255, .02);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        .form-row, .form-field, .field-value, .field-label, .word-forms-container {
+          background-color: transparent;
+        }
+      }
       .word-form {
         .form-row {
           padding: 10px 0px;
           display: grid;
           width: 90%;
           &.-small {
-            padding: 0px 0px 5px 0px;
-            font-size: 10px;
-            border-bottom: solid 1px white;
-            span {
-              font-size: 14px;
-              display: inline-block;
-              margin: 0px 4px;
+            padding: 4px 0px 6px 0px;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            .form-pill {
+              display: inline-flex;
+              align-items: center;
+              gap: 3px;
+              padding: 1px 6px;
+              margin: 0px 2px;
+              border-radius: 9px;
+              line-height: 1;
+              border: 1px solid $dark-main-color;
+              color: $dark-main-color;
               cursor: pointer;
+              transition: background-color .15s ease;
+              &:hover {
+                background-color: rgba(46, 160, 67, .12);
+              }
+              &.-remove {
+                border-color: #e04b4b;
+                color: #e04b4b;
+                &:hover {
+                  background-color: rgba(224, 75, 75, .12);
+                }
+              }
             }
             i {
-              width: 12px;
-              height: 12px;
-              vertical-align: text-top;
-              margin: 0px 3px;
+              width: 11px;
+              height: 11px;
+              font-size: 11px;
+              line-height: 11px;
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              margin: 0px;
               border: none;
               &.-add-item {
-                color: #2c9250;
+                color: inherit;
               }
               &.-remove-item {
-                color: red;
+                color: inherit;
               }
             }
           }
@@ -137,9 +179,19 @@ body {
             margin: auto 0px;
             font-size: 20px;
             .field-value {
+              input, textarea {
+                background-color: $input-bg-color;
+                border: 1px solid rgba(255, 255, 255, .15);
+                border-radius: 6px;
+                padding: 6px 8px;
+                transition: border-color .15s ease, box-shadow .15s ease;
+                &:focus {
+                  outline: none;
+                  border-color: $dark-main-color;
+                  box-shadow: 0 0 0 2px rgba(46, 160, 67, .25);
+                }
+              }
               input {
-                border: 1px solid white;
-                padding: 1px 2px;
                 max-width: 90%;
               }
               textarea {
@@ -150,10 +202,10 @@ body {
             }
           }
           i.fa-play {
-            color: green;
+            color: $dark-main-color;
           }
           i.fa-arrows-rotate {
-            color: red;
+            color: #e04b4b;
           }
           i {
             cursor: pointer;
@@ -163,16 +215,29 @@ body {
             margin: 0px 2px;
             vertical-align: text-bottom;
             display: inline-block;
+            &.icon-button {
+              width: 26px;
+              height: 26px;
+              border-radius: 50%;
+              border: 1px solid rgba(255, 255, 255, .2);
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              &:hover {
+                border-color: $dark-main-color;
+                color: $dark-main-color;
+              }
+            }
           }
           .move-word-placeholder {
             display: inline-block;
             width: 23px;
           }
           .fa-plus {
-            color: green;
+            color: $dark-main-color;
           }
           .fa-minus {
-            color: red;
+            color: #e04b4b;
           }
         }
       }
@@ -189,9 +254,17 @@ body {
             vertical-align: middle;
           }
           .field-value {
-            input {
-              border: 1px solid white;
-              padding: 1px 2px;
+            input, textarea {
+              background-color: $input-bg-color;
+              border: 1px solid rgba(255, 255, 255, .15);
+              border-radius: 6px;
+              padding: 6px 8px;
+              transition: border-color .15s ease, box-shadow .15s ease;
+              &:focus {
+                outline: none;
+                border-color: $dark-main-color;
+                box-shadow: 0 0 0 2px rgba(46, 160, 67, .25);
+              }
             }
             textarea {
               resize: none;
@@ -199,10 +272,10 @@ body {
             }
           }
           i.fa-play {
-            color: green;
+            color: $dark-main-color;
           }
           i.fa-arrows-rotate {
-            color: red;
+            color: #e04b4b;
           }
           i {
             cursor: pointer;
@@ -218,10 +291,10 @@ body {
             width: 23px;
           }
           .fa-plus {
-            color: green;
+            color: $dark-main-color;
           }
           .fa-minus {
-            color: red;
+            color: #e04b4b;
           }
         }
       }
@@ -259,9 +332,34 @@ body {
       &.-words-list {
         .-word-row {
           background-color: #4c4949;
+          border-radius: 8px;
+          transition: background-color .15s ease;
+          &:hover {
+            background-color: #585555;
+          }
           .item-field {
             background-color: #4c4949;
           }
+        }
+        .-nested-row {
+          margin-left: 20px;
+          padding-left: 10px;
+          border-left: 2px solid rgba(46, 160, 67, .25);
+        }
+        .items-header {
+          border-bottom: 2px solid $dark-main-color;
+          padding-bottom: 6px;
+          .item-header {
+            text-transform: uppercase;
+            font-size: .85em;
+            color: $dark-main-color;
+          }
+        }
+        .item-action {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          justify-content: flex-end;
         }
         .-rows-5 {
           grid-template-columns: 23% 23% 23% 23% 8%;
@@ -280,7 +378,7 @@ body {
         .item-field {
           .search-result {
             display: inline-block;
-            background-color: #c55604;
+            background-color: #d97706;
           }
           .search-result-formatted {
             background-color: inherit;
@@ -288,6 +386,14 @@ body {
         }
       }
       &.-words-filter {
+        background-color: rgba(255, 255, 255, .02);
+        border: 1px solid rgba(255, 255, 255, .08);
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-bottom: 20px;
+        .item-row, .item-field {
+          background-color: transparent;
+        }
         .-rows-7 {
           grid-template-columns: 14% 14% 14% 14% 14% 10% 18%;
           gap: 10px;
@@ -310,7 +416,7 @@ body {
         .item-field {
           .search-result {
             display: inline-block;
-            background-color: #c55604;
+            background-color: #d97706;
           }
           .search-result-formatted {
             background-color: inherit;
@@ -391,18 +497,57 @@ body {
     padding: 30px 15px 0px 15px;
     border-right: 1px solid #c5c3c3;
     font-size: 25px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     .user-name {
       margin-bottom: 15px;
     }
+    > div {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
     .menu-item {
-      padding: 12px 16px;
+      position: relative;
+      padding: 14px 18px;
       border-radius: 8px;
+      transition: background-color .15s ease;
+      &::before {
+        content: "";
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        bottom: 0px;
+        width: 3px;
+        border-radius: 3px;
+        background-color: transparent;
+        transition: background-color .15s ease;
+      }
+      a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      i {
+        width: 22px;
+        text-align: center;
+        transition: color .15s ease;
+      }
+      &:hover {
+        background-color: rgba(255, 255, 255, .04);
+      }
       &.-selected {
         background-color: gray;
       }
       &.-logout {
         cursor: pointer;
-        margin-top: 15px;
+        margin-top: auto;
+        border-top: 1px solid rgba(255, 255, 255, .12);
+        padding-top: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
       }
     }
   }
@@ -800,8 +945,14 @@ div.items-list {
       border: 2px solid #4c4949;
       padding: 2px 7px;
       cursor: pointer;
+      transition: border-color .15s ease;
+      &:hover {
+        border-color: $dark-main-color;
+      }
       &.-current {
-        border-color: #fff;
+        border-color: $dark-main-color;
+        background-color: rgba(46, 160, 67, .15);
+        color: $dark-main-color;
       }
     }
   }

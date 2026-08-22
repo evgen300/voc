@@ -46,16 +46,16 @@ export default function LeftMenuPage() {
           return (
             <div key={linkIndex} className={"menu-item " + (pathname.indexOf(link) === 1 ? " -selected" : "")}>
               <Link href={"/" + link}>
-              <i className={links[link].icon}></i>&nbsp;
-                { t(link) }
+                <i className={links[link].icon}></i>
+                <span>{ t(link) }</span>
               </Link>
             </div>
           )
         }) }
         { status === "authenticated" && (
           <div className="menu-item -logout" onClick={handleSignOut}>
-            <i className="fa-solid fa-right-from-bracket"></i>&nbsp;
-            { t('logout') }
+            <i className="fa-solid fa-right-from-bracket"></i>
+            <span>{ t('logout') }</span>
           </div>
         ) }
       </div>
