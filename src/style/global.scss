@@ -378,7 +378,7 @@ body {
         .item-field {
           .search-result {
             display: inline-block;
-            background-color: #d97706;
+            background-color: #01a026;
           }
           .search-result-formatted {
             background-color: inherit;
@@ -416,7 +416,7 @@ body {
         .item-field {
           .search-result {
             display: inline-block;
-            background-color: #d97706;
+            background-color: #01a026;
           }
           .search-result-formatted {
             background-color: inherit;
@@ -542,7 +542,6 @@ body {
       }
       &.-logout {
         cursor: pointer;
-        margin-top: auto;
         border-top: 1px solid rgba(255, 255, 255, .12);
         padding-top: 15px;
         display: flex;

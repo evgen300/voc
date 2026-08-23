@@ -262,6 +262,9 @@ export default function WordsList() {
                               <div className="item-field">
                               { getFormattedFieldText(v_time_form.translation, 'translation') }
                               </div>
+                              <div className="item-field">
+                                { getFormattedFieldText(v_time_form.notes, 'notes') }
+                              </div>
                             </div>
                             )
                           }) }

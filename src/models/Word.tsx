@@ -231,6 +231,10 @@ const FUZZY_SEARCH_PATHS = [
   'verb_times.forms.word',
 ];
 
+const escapeRegex = function (value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 const search = async function(request: GetListInterface) {
   let params: any = {};
   Object.keys(request).forEach(field => {
@@ -321,13 +325,71 @@ const search = async function(request: GetListInterface) {
       }
     });
     pipeline.push({ $addFields: { score: { $meta: 'searchScore' } } });
+
+    // Guarantee any record with a full/partial (substring) match of the
+    // search term in any field ranks above records that only matched via
+    // fuzzy edit-distance, regardless of how the Atlas Search index's
+    // analyzers/field types happen to be configured.
+    const escapedSearch = escapeRegex(request.search || "");
+    const fieldMatches = (input: any) => ({
+      $regexMatch: { input: { $ifNull: [ input, "" ] }, regex: escapedSearch, options: 'i' }
+    });
+    const anyArrayFieldMatches = (arrayInput: any, subFields: Array<string>) => ({
+      $gt: [
+        {
+          $size: {
+            $filter: {
+              input: arrayInput,
+              as: 'f',
+              cond: {
+                $or: subFields.map(subField => fieldMatches(`$$f.${subField}`))
+              }
+            }
+          }
+        },
+        0
+      ]
+    });
+    // Mirrors FUZZY_SEARCH_PATHS exactly: all 4 fields under forms.*, but
+    // only .word under verb_times.forms (the only verb-time path the
+    // fuzzy $search stage above actually searches).
+    pipeline.push({
+      $addFields: {
+        hasExactMatch: {
+          $or: [
+            fieldMatches('$word'),
+            fieldMatches('$transcription'),
+            fieldMatches('$translation'),
+            fieldMatches('$notes'),
+            anyArrayFieldMatches({ $ifNull: [ '$forms', [] ] }, [ 'word', 'transcription', 'translation', 'notes' ]),
+            anyArrayFieldMatches({
+              $reduce: {
+                input: { $ifNull: [ '$verb_times', [] ] },
+                initialValue: [],
+                in: { $concatArrays: [ '$$value', { $ifNull: [ '$$this.forms', [] ] } ] }
+              }
+            }, [ 'word', 'transcription', 'translation', 'notes' ]),
+          ]
+        }
+      }
+    });
+    pipeline.push({
+      $addFields: {
+        finalScore: {
+          $add: [
+            { $ifNull: [ '$score', 0 ] },
+            { $cond: [ '$hasExactMatch', 1000, 0 ] }
+          ]
+        }
+      }
+    });
   }
 
   pipeline.push({ $match: params });
   pipeline.push({
     $facet: {
       metadata: [{ $count: 'totalCount' }],
-      data: [{ $sort: useFuzzySearch ? { score: -1 } : { word: 1 } }],
+      data: [{ $sort: useFuzzySearch ? { finalScore: -1 } : { word: 1 } }],
     }
   });
 
